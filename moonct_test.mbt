@@ -146,3 +146,17 @@ test "node hash rejects malformed children" {
     None,
   )
 }
+
+///|
+test "tree head invariants reject bad version and empty tree" {
+  assert_false(
+    @moonct.tree_head_valid(
+      @moonct.new_tree_head(1U, 0U, 1U, Array::make(32, 0)),
+    ),
+  )
+  assert_false(
+    @moonct.tree_head_valid(
+      @moonct.new_tree_head(0U, 0U, 0U, Array::make(32, 0)),
+    ),
+  )
+}
