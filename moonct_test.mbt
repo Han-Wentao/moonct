@@ -138,3 +138,11 @@ test "leaf and node domains stay distinct" {
     _ => assert_true(false)
   }
 }
+
+///|
+test "node hash rejects malformed children" {
+  assert_eq(
+    @moonct.node_hash(test_hash, Array::make(31, 0), Array::make(32, 0)),
+    None,
+  )
+}
