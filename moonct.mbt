@@ -182,6 +182,12 @@ pub fn verify_inclusion(
 }
 
 ///|
+/// Check the non-cryptographic invariants of a signed tree head.
+pub fn tree_head_valid(head : TreeHead) -> Bool {
+  head.version == 0U && head.tree_size > 0U && valid_hash(head.root_hash)
+}
+
+///|
 /// Verify the signed tree head using a host-provided signature verifier.
 pub fn verify_tree_head(
   head : TreeHead,
@@ -190,9 +196,7 @@ pub fn verify_tree_head(
   public_key : Array[Int],
   verify_signature : (Array[Int], Array[Int], Array[Int]) -> Bool,
 ) -> Bool {
-  head.version == 0U &&
-  head.tree_size > 0U &&
-  valid_hash(head.root_hash) &&
+  tree_head_valid(head) &&
   signature.length() > 0 &&
   public_key.length() > 0 &&
   verify_signature(public_key, signed_bytes, signature)
