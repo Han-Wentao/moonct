@@ -1,0 +1,46 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Han-Wentao/moonct"
+
+// Values
+pub fn inclusion_root((Array[Int]) -> Array[Int], Array[Int], InclusionProof) -> Array[Int]?
+
+pub fn is_valid_hash(Array[Int]) -> Bool
+
+pub fn leaf_hash((Array[Int]) -> Array[Int], Array[Int]) -> Array[Int]?
+
+pub fn new_inclusion_proof(UInt, UInt, Array[Array[Int]]) -> InclusionProof
+
+pub fn new_tree_head(UInt, UInt, UInt, Array[Int]) -> TreeHead
+
+pub fn node_hash((Array[Int]) -> Array[Int], Array[Int], Array[Int]) -> Array[Int]?
+
+pub fn proof_height(UInt) -> UInt?
+
+pub fn proof_shape_valid(InclusionProof) -> Bool
+
+pub fn verify_inclusion((Array[Int]) -> Array[Int], Array[Int], InclusionProof, TreeHead) -> Bool
+
+pub fn verify_leaf_inclusion((Array[Int]) -> Array[Int], Array[Int], InclusionProof, TreeHead) -> Bool
+
+pub fn verify_tree_head(TreeHead, Array[Int], Array[Int], Array[Int], (Array[Int], Array[Int], Array[Int]) -> Bool) -> Bool
+
+// Errors
+
+// Types and methods
+pub struct InclusionProof {
+  leaf_index : UInt
+  tree_size : UInt
+  audit_path : Array[Array[Int]]
+}
+
+pub struct TreeHead {
+  version : UInt
+  timestamp : UInt
+  tree_size : UInt
+  root_hash : Array[Int]
+}
+
+// Type aliases
+pub type Hash = Array[Int]
+
+// Traits
