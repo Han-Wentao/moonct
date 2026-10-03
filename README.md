@@ -1,6 +1,6 @@
 # MoonCT
 
-MoonCT is a runtime-agnostic MoonBit library for validating Certificate Transparency Merkle proofs. It models Signed Tree Head fields, RFC 6962 leaf/node domain separation, inclusion-proof folding, proof-shape checks, and host-supplied signature verification.
+MoonCT is a runtime-agnostic MoonBit library for validating Certificate Transparency Merkle proofs. It models Signed Tree Head fields, RFC 6962 leaf/node domain separation, inclusion-proof folding, proof-shape checks, tree-head invariant checks, and host-supplied signature verification.
 
 ## Scope
 
@@ -27,3 +27,7 @@ moon run cmd/main
 ## License
 
 Apache-2.0. The project is an original implementation. It follows the public RFC 6962/RFC 9162 protocol descriptions and delegates cryptographic primitives to the caller; it does not copy code from an upstream implementation.
+
+## Public validation helpers
+
+`is_valid_hash`, `proof_shape_valid`, and `tree_head_valid` expose cheap structural checks for adapters that want to reject malformed data before invoking cryptographic work.
