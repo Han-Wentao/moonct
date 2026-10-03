@@ -38,3 +38,7 @@
 ## 限制与复核
 
 MoonCakes 搜索依赖公开索引和当前工具链结果；GitHub 搜索依赖公开仓库及 CLI 返回范围。结果不能证明全球不存在同类项目。提交前将再次用最终 API 名称和能力描述反向搜索，并把新增的直接重合项目加入注册表。
+
+## 实现前最终复核
+
+2026-10-03 对最终 API 名称 `MoonCT`、`tree_head_valid`、`proof_shape_valid`、`verify_inclusion` 和 `verify_tree_head` 重新做了 MoonCakes/GitHub 关键词反向检索；未发现直接同名或以 CT 日志 STH inclusion-proof 验证为中心的 MoonBit 项目。现有相邻项目仍按上表保留边界说明。
