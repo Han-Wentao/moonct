@@ -160,3 +160,13 @@ test "tree head invariants reject bad version and empty tree" {
     ),
   )
 }
+
+///|
+test "tree head verifier rejects missing signature inputs" {
+  let head = @moonct.new_tree_head(0U, 1U, 1U, Array::make(32, 1))
+  let accepts : (Array[Int], Array[Int], Array[Int]) -> Bool = fn(_k, _m, _s) {
+    true
+  }
+  assert_false(@moonct.verify_tree_head(head, [], [1], [2], accepts))
+  assert_false(@moonct.verify_tree_head(head, [1], [1], [], accepts))
+}
