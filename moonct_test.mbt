@@ -101,3 +101,28 @@ test "signature rejection is propagated" {
   }
   assert_false(@moonct.verify_tree_head(head, [1], [2], [3], rejected))
 }
+
+///|
+test "hash shape is explicit" {
+  assert_true(@moonct.is_valid_hash(Array::make(32, 0)))
+  assert_false(@moonct.is_valid_hash(Array::make(31, 0)))
+}
+
+///|
+test "proof shape follows tree height" {
+  assert_true(
+    @moonct.proof_shape_valid(@moonct.new_inclusion_proof(0U, 1U, [])),
+  )
+  assert_true(
+    @moonct.proof_shape_valid(
+      @moonct.new_inclusion_proof(5U, 7U, [
+        Array::make(32, 1),
+        Array::make(32, 2),
+        Array::make(32, 3),
+      ]),
+    ),
+  )
+  assert_false(
+    @moonct.proof_shape_valid(@moonct.new_inclusion_proof(0U, 7U, [])),
+  )
+}

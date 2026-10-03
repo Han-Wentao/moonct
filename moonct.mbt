@@ -23,8 +23,16 @@ pub struct InclusionProof {
 }
 
 ///|
-fn valid_hash(hash : Hash) -> Bool {
+
+///|
+/// Return whether a value has the 32-byte SHA-256 shape expected by CT.
+pub fn is_valid_hash(hash : Hash) -> Bool {
   hash.length() == 32
+}
+
+///|
+fn valid_hash(hash : Hash) -> Bool {
+  is_valid_hash(hash)
 }
 
 ///|
@@ -94,15 +102,29 @@ pub fn node_hash(
 }
 
 ///|
+/// Check the structural bounds of an inclusion proof before hashing.
+pub fn proof_shape_valid(proof : InclusionProof) -> Bool {
+  if proof.tree_size == 0U || proof.leaf_index >= proof.tree_size {
+    false
+  } else {
+    let mut width = proof.tree_size
+    let mut expected = 0
+    while width > 1U {
+      expected = expected + 1
+      width = (width + 1U) / 2U
+    }
+    expected == proof.audit_path.length()
+  }
+}
+
+///|
 /// Calculate the root implied by an inclusion proof.
 pub fn inclusion_root(
   sha256 : (Array[Int]) -> Hash,
   leaf : Hash,
   proof : InclusionProof,
 ) -> Hash? {
-  if !valid_hash(leaf) ||
-    proof.tree_size == 0U ||
-    proof.leaf_index >= proof.tree_size {
+  if !valid_hash(leaf) || !proof_shape_valid(proof) {
     None
   } else {
     let mut node = leaf
