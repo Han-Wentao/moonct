@@ -1,0 +1,21 @@
+name: MoonCT CI
+on:
+  push:
+  pull_request:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install MoonBit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+      - name: Check
+        run: moon check
+      - name: Test
+        run: moon test
+      - name: Format check
+        run: moon fmt --check
+      - name: Runnable example
+        run: moon run cmd/main
