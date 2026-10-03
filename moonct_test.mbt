@@ -126,3 +126,15 @@ test "proof shape follows tree height" {
     @moonct.proof_shape_valid(@moonct.new_inclusion_proof(0U, 7U, [])),
   )
 }
+
+///|
+test "leaf and node domains stay distinct" {
+  let leaf = @moonct.leaf_hash(test_hash, [1, 2, 3])
+  let left = Array::make(32, 1)
+  let right = Array::make(32, 2)
+  let node = @moonct.node_hash(test_hash, left, right)
+  match (leaf, node) {
+    (Some(a), Some(b)) => assert_false(a == b)
+    _ => assert_true(false)
+  }
+}
