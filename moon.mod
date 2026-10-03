@@ -13,13 +13,18 @@ name = "Han-Wentao/moonct"
 
 version = "0.1.0"
 
-readme = "README.mbt.md"
+readme = "README.md"
 
 repository = "https://github.com/Han-Wentao/moonct"
 
 license = "Apache-2.0"
 
-keywords = [ ]
+keywords = [
+  "certificate-transparency",
+  "merkle",
+  "security",
+  "proof-verification",
+]
 
 preferred_target = "wasm"
 

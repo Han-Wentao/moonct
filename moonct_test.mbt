@@ -45,3 +45,59 @@ test "tree head verifier delegates signature" {
   }
   assert_true(@moonct.verify_tree_head(head, [1], [2], [3], accepted))
 }
+
+///|
+test "raw leaf helper matches hash helper" {
+  let leaf = [9, 8, 7]
+  let hash = @moonct.leaf_hash(test_hash, leaf)
+  match hash {
+    Some(value) => {
+      let proof = @moonct.new_inclusion_proof(0U, 1U, [])
+      let head = @moonct.new_tree_head(0U, 1U, 1U, value)
+      assert_true(@moonct.verify_leaf_inclusion(test_hash, leaf, proof, head))
+    }
+    None => assert_true(false)
+  }
+}
+
+///|
+test "invalid root is rejected" {
+  let leaf = @moonct.leaf_hash(test_hash, [1])
+  match leaf {
+    Some(value) => {
+      let proof = @moonct.new_inclusion_proof(0U, 1U, [])
+      let head = @moonct.new_tree_head(0U, 1U, 1U, Array::make(32, 99))
+      assert_false(@moonct.verify_inclusion(test_hash, value, proof, head))
+    }
+    None => assert_true(false)
+  }
+}
+
+///|
+test "malformed path is rejected" {
+  let leaf = Array::make(32, 1)
+  let proof = @moonct.new_inclusion_proof(0U, 2U, [])
+  let head = @moonct.new_tree_head(0U, 1U, 2U, Array::make(32, 1))
+  assert_false(@moonct.verify_inclusion(test_hash, leaf, proof, head))
+}
+
+///|
+test "invalid index is rejected" {
+  let leaf = Array::make(32, 1)
+  let proof = @moonct.new_inclusion_proof(2U, 2U, [])
+  let head = @moonct.new_tree_head(0U, 1U, 2U, Array::make(32, 1))
+  assert_false(@moonct.verify_inclusion(test_hash, leaf, proof, head))
+}
+
+///|
+test "signature rejection is propagated" {
+  let head = @moonct.new_tree_head(0U, 1U, 1U, Array::make(32, 1))
+  let rejected : (Array[Int], Array[Int], Array[Int]) -> Bool = fn(
+    _key,
+    _message,
+    _signature,
+  ) {
+    false
+  }
+  assert_false(@moonct.verify_tree_head(head, [1], [2], [3], rejected))
+}

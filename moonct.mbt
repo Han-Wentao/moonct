@@ -212,3 +212,17 @@ pub fn new_inclusion_proof(
 ) -> InclusionProof {
   { leaf_index, tree_size, audit_path, }
 }
+
+///|
+/// Hash a raw leaf and verify its inclusion proof in one operation.
+pub fn verify_leaf_inclusion(
+  sha256 : (Array[Int]) -> Hash,
+  leaf : Array[Int],
+  proof : InclusionProof,
+  head : TreeHead,
+) -> Bool {
+  match leaf_hash(sha256, leaf) {
+    Some(hash) => verify_inclusion(sha256, hash, proof, head)
+    None => false
+  }
+}

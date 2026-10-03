@@ -1,4 +1,9 @@
+///|
 fn main {
   let height = @moonct.proof_height(8U)
-  println("MoonCT proof height for tree size 8: " + height.to_string())
+  match height {
+    Some(value) =>
+      println("MoonCT proof height for tree size 8: " + value.to_string())
+    None => println("MoonCT rejected an empty tree")
+  }
 }
