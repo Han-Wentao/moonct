@@ -42,3 +42,16 @@ MoonCakes 搜索依赖公开索引和当前工具链结果；GitHub 搜索依赖
 ## 实现前最终复核
 
 2026-10-03 对最终 API 名称 `MoonCT`、`tree_head_valid`、`proof_shape_valid`、`verify_inclusion` 和 `verify_tree_head` 重新做了 MoonCakes/GitHub 关键词反向检索；未发现直接同名或以 CT 日志 STH inclusion-proof 验证为中心的 MoonBit 项目。现有相邻项目仍按上表保留边界说明。
+
+
+## 2026-10-30 扩展复核
+
+一致性证明、v1/v2 编解码、CT JSON 和内存日志进入实现范围后，再次用本机 MoonBit 工具链执行有界 `moon search`。这次可以看到相邻包，因此不能沿用“没有邻近 CT 或 Merkle 包”的说法。没有对这些包运行 `moon doc`，下面只记录检索结果本身。
+
+- `mizchi/experimental_crypto/ct`：Certificate Transparency RFC 6962，解析 SCT 列表中的 X.509 扩展，构造已签名条目，计算 log ID，并对照 SPKI 验证 SCT 签名。重心是 SCT 解析和签名验证，不是 Merkle inclusion 或 consistency。MoonCT 仍然不解析 X.509，也不实现签名。
+- `wch6766/MoonSecureCodec/lib/merkle`：通用安全编解码工具中的 RFC 6962 Merkle 树、inclusion proof 和数据完整性检查。这是最近的通用 Merkle 邻居，属于供应链编解码，不是 CT 日志的 STH、两种 inclusion、consistency、v1/v2 TransItem 和 CT JSON 库，也不应写成 CT 日志客户端。
+- `starlittle/MoonEvidence`：证据包的 Merkle inclusion proof，哈希可配置。输入对象不同。
+- `LAOBIAO656/moonreplaykit`：回放证据中的 Merkle 风格证明。工作流不同。
+- `mizchi/experimental_crypto/rfc3161`：时间戳令牌，只是相邻的密码能力，不是 CT 证明。
+
+2026-10-03 的查重没有发现直接的 CT 库。2026-10-30 的复核发现了上面这些邻居。其中没有一个同时覆盖 CT 日志 STH、旧式 inclusion 与 RFC 9162 最短路径、consistency、v1/v2 工件、CT JSON 和内存日志。扩展因此留在现有 MoonCT 中，而不是另起一个项目。

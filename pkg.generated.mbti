@@ -2,35 +2,335 @@
 package "Han-Wentao/moonct"
 
 // Values
+pub fn base64_decode(String) -> Result[Array[Int], CtError]
+
+pub fn base64_encode(Array[Int]) -> Result[String, CtError]
+
+pub fn bytes_concat(Array[Int], Array[Int]) -> Array[Int]
+
+pub fn bytes_concat_all(Array[Array[Int]]) -> Array[Int]
+
+pub fn bytes_copy(Array[Int]) -> Array[Int]
+
+pub fn bytes_equal(Array[Int], Array[Int]) -> Bool
+
+pub fn bytes_has_prefix(Array[Int], Array[Int]) -> Bool
+
+pub fn bytes_in_range(Array[Int]) -> Bool
+
+pub fn bytes_slice(Array[Int], Int, Int) -> Result[Array[Int], CtError]
+
+pub fn consistency_from_trans(TransItem) -> Result[MerkleConsistency, CtError]
+
+pub fn consistency_proof((Array[Int]) -> Array[Int], Array[Array[Int]], UInt64) -> Result[MerkleConsistency, CtError]
+
+pub fn ct_error_is_truncated(CtError) -> Bool
+
+pub fn ct_error_text(CtError) -> String
+
+pub fn decode_consistency_message(String) -> Result[ConsistencyMessage, CtError]
+
+pub fn decode_digitally_signed(Array[Int]) -> Result[DigitallySigned, CtError]
+
+pub fn decode_inclusion_message(String) -> Result[InclusionMessage, CtError]
+
+pub fn decode_sth_message(String) -> Result[SthMessage, CtError]
+
+pub fn decode_trans_item(Array[Int]) -> Result[TransItem, CtError]
+
+pub fn decode_v1_merkle_leaf(Array[Int]) -> Result[V1MerkleTreeLeaf, CtError]
+
+pub fn decode_v1_sct(Array[Int]) -> Result[V1SignedCertificateTimestamp, CtError]
+
+pub fn decode_v1_timestamped_entry(Array[Int]) -> Result[V1TimestampedEntry, CtError]
+
+pub fn decode_v1_tree_head_signed_input(Array[Int]) -> Result[V1TreeHeadSigned, CtError]
+
+pub fn empty_tree_hash((Array[Int]) -> Array[Int]) -> Result[Array[Int], CtError]
+
+pub fn encode_checkpoint_sth(LogCheckpoint, Array[Int]) -> Result[String, CtError]
+
+pub fn encode_consistency_message(ConsistencyMessage) -> Result[String, CtError]
+
+pub fn encode_digitally_signed(DigitallySigned) -> Result[Array[Int], CtError]
+
+pub fn encode_inclusion_message(InclusionMessage) -> Result[String, CtError]
+
+pub fn encode_log_consistency(MerkleConsistency) -> Result[String, CtError]
+
+pub fn encode_log_inclusion(MerkleInclusion) -> Result[String, CtError]
+
+pub fn encode_sth_message(SthMessage) -> Result[String, CtError]
+
+pub fn encode_trans_item(TransItem) -> Result[Array[Int], CtError]
+
+pub fn encode_v1_merkle_leaf(V1TimestampedEntry) -> Result[Array[Int], CtError]
+
+pub fn encode_v1_sct(V1SignedCertificateTimestamp) -> Result[Array[Int], CtError]
+
+pub fn encode_v1_timestamped_entry(V1TimestampedEntry) -> Result[Array[Int], CtError]
+
+pub fn hash_algorithm_code(HashAlgorithm) -> Int
+
+pub fn hash_algorithm_from_code(Int) -> Result[HashAlgorithm, CtError]
+
+pub fn hex_decode(String) -> Result[Array[Int], CtError]
+
+pub fn hex_encode(Array[Int]) -> Result[String, CtError]
+
+pub fn inclusion_from_trans(TransItem) -> Result[MerkleInclusion, CtError]
+
+pub fn inclusion_path((Array[Int]) -> Array[Int], Array[Array[Int]], UInt64) -> Result[MerkleInclusion, CtError]
+
 pub fn inclusion_root((Array[Int]) -> Array[Int], Array[Int], InclusionProof) -> Array[Int]?
+
+pub fn is_power_of_two_u64(UInt64) -> Bool
 
 pub fn is_valid_hash(Array[Int]) -> Bool
 
 pub fn leaf_hash((Array[Int]) -> Array[Int], Array[Int]) -> Array[Int]?
 
+pub fn merkle_tree_hash((Array[Int]) -> Array[Int], Array[Array[Int]]) -> Result[Array[Int], CtError]
+
+pub fn merkle_tree_hash_by_stack((Array[Int]) -> Array[Int], Array[Array[Int]]) -> Result[Array[Int], CtError]
+
+pub fn new_byte_reader(Array[Int]) -> ByteReader
+
+pub fn new_byte_writer() -> ByteWriter
+
+pub fn new_ct_extension(Int, Array[Int]) -> Result[CtExtension, CtError]
+
+pub fn new_digitally_signed(HashAlgorithm, SignatureAlgorithm, Array[Int]) -> Result[DigitallySigned, CtError]
+
 pub fn new_inclusion_proof(UInt, UInt, Array[Array[Int]]) -> InclusionProof
+
+pub fn new_memory_log() -> MemoryLog
 
 pub fn new_tree_head(UInt, UInt, UInt, Array[Int]) -> TreeHead
 
+pub fn new_v1_sct(Array[Int], UInt64, Array[Int], DigitallySigned) -> Result[V1SignedCertificateTimestamp, CtError]
+
+pub fn new_v1_timestamped_entry(UInt64, V1LeafBody, Array[Int]) -> Result[V1TimestampedEntry, CtError]
+
+pub fn new_v2_certificate_entry(UInt64, Array[Int], Array[Int], Array[CtExtension]) -> Result[V2CertificateEntry, CtError]
+
+pub fn new_v2_consistency(Array[Int], UInt64, UInt64, Array[Array[Int]]) -> Result[V2ConsistencyProof, CtError]
+
+pub fn new_v2_inclusion(Array[Int], UInt64, UInt64, Array[Array[Int]]) -> Result[V2InclusionProof, CtError]
+
+pub fn new_v2_sct(Array[Int], UInt64, Array[CtExtension], Array[Int]) -> Result[V2SignedCertificateTimestamp, CtError]
+
+pub fn new_v2_signed_tree_head(Array[Int], V2TreeHead, Array[Int]) -> Result[V2SignedTreeHead, CtError]
+
+pub fn new_v2_tree_head(UInt64, UInt64, Array[Int], Array[CtExtension]) -> Result[V2TreeHead, CtError]
+
+pub fn new_write_gate() -> WriteGate
+
 pub fn node_hash((Array[Int]) -> Array[Int], Array[Int], Array[Int]) -> Array[Int]?
+
+pub fn parse_ct_json(String) -> Result[CtJson, CtError]
 
 pub fn proof_height(UInt) -> UInt?
 
 pub fn proof_shape_valid(InclusionProof) -> Bool
 
+pub fn require_consistency((Array[Int]) -> Array[Int], Array[Int], Array[Int], MerkleConsistency) -> Result[Unit, CtError]
+
+pub fn require_merkle_inclusion((Array[Int]) -> Array[Int], Array[Int], MerkleInclusion, Array[Int]) -> Result[Unit, CtError]
+
+pub fn signature_algorithm_code(SignatureAlgorithm) -> Int
+
+pub fn signature_algorithm_from_code(Int) -> Result[SignatureAlgorithm, CtError]
+
+pub fn trans_type_code(TransItem) -> Int
+
+pub fn tree_head_valid(TreeHead) -> Bool
+
+pub fn v1_precert_body(Array[Int], Array[Int]) -> Result[V1LeafBody, CtError]
+
+pub fn v1_sct_binds_entry(V1SignedCertificateTimestamp, V1TimestampedEntry) -> Result[Unit, CtError]
+
+pub fn v1_sct_signed_input(V1TimestampedEntry) -> Result[Array[Int], CtError]
+
+pub fn v1_tree_head_signed_input(UInt64, UInt64, Array[Int]) -> Result[Array[Int], CtError]
+
+pub fn v1_x509_body(Array[Int]) -> Result[V1LeafBody, CtError]
+
+pub fn verify_consistency((Array[Int]) -> Array[Int], Array[Int], Array[Int], MerkleConsistency) -> Bool
+
 pub fn verify_inclusion((Array[Int]) -> Array[Int], Array[Int], InclusionProof, TreeHead) -> Bool
 
 pub fn verify_leaf_inclusion((Array[Int]) -> Array[Int], Array[Int], InclusionProof, TreeHead) -> Bool
 
+pub fn verify_merkle_inclusion((Array[Int]) -> Array[Int], Array[Int], MerkleInclusion, Array[Int]) -> Bool
+
+pub fn verify_trans_consistency((Array[Int]) -> Array[Int], Array[Int], Array[Int], TransItem) -> Result[Unit, CtError]
+
+pub fn verify_trans_inclusion((Array[Int]) -> Array[Int], Array[Int], TransItem, Array[Int]) -> Result[Unit, CtError]
+
 pub fn verify_tree_head(TreeHead, Array[Int], Array[Int], Array[Int], (Array[Int], Array[Int], Array[Int]) -> Bool) -> Bool
+
+pub fn write_ct_json(CtJson) -> Result[String, CtError]
 
 // Errors
 
 // Types and methods
+pub struct ByteReader {
+  data : Array[Int]
+  mut offset : Int
+}
+pub fn ByteReader::expect_exhausted(Self) -> Result[Unit, CtError]
+pub fn ByteReader::is_exhausted(Self) -> Bool
+pub fn ByteReader::position(Self) -> Int
+pub fn ByteReader::read_bytes(Self, Int) -> Result[Array[Int], CtError]
+pub fn ByteReader::read_opaque(Self, Int, Int, Int) -> Result[Array[Int], CtError]
+pub fn ByteReader::read_u16(Self) -> Result[Int, CtError]
+pub fn ByteReader::read_u24(Self) -> Result[Int, CtError]
+pub fn ByteReader::read_u64(Self) -> Result[UInt64, CtError]
+pub fn ByteReader::read_u8(Self) -> Result[Int, CtError]
+pub fn ByteReader::read_uint(Self, Int) -> Result[Int, CtError]
+pub fn ByteReader::remaining(Self) -> Int
+pub fn ByteReader::rewind_to(Self, Int) -> Result[Unit, CtError]
+
+pub struct ByteWriter {
+  data : Array[Int]
+}
+pub fn ByteWriter::bytes(Self) -> Array[Int]
+pub fn ByteWriter::length(Self) -> Int
+pub fn ByteWriter::write_bytes(Self, Array[Int]) -> Result[Unit, CtError]
+pub fn ByteWriter::write_opaque(Self, Int, Array[Int], Int, Int) -> Result[Unit, CtError]
+pub fn ByteWriter::write_u16(Self, Int) -> Result[Unit, CtError]
+pub fn ByteWriter::write_u24(Self, Int) -> Result[Unit, CtError]
+pub fn ByteWriter::write_u64(Self, UInt64) -> Result[Unit, CtError]
+pub fn ByteWriter::write_u8(Self, Int) -> Result[Unit, CtError]
+pub fn ByteWriter::write_uint(Self, Int, Int) -> Result[Unit, CtError]
+
+pub struct ConsistencyMessage {
+  consistency : Array[Array[Int]]
+}
+
+pub enum CtError {
+  Truncated
+  BadLength
+  BadByte
+  BadEnum(Int)
+  BadHash
+  BadIndex
+  BadProof
+  BadJson(String)
+  EmptyInput
+  Overflow
+  OutOfOrder
+  Duplicate
+  Unsupported
+}
+
+pub struct CtExtension {
+  type_code : Int
+  data : Array[Int]
+}
+
+pub enum CtJson {
+  JsonNull
+  JsonBool(Bool)
+  JsonNumber(String)
+  JsonString(String)
+  JsonArray(Array[CtJson])
+  JsonObject(Array[JsonField])
+}
+
+pub struct DigitallySigned {
+  hash_algorithm : HashAlgorithm
+  signature_algorithm : SignatureAlgorithm
+  signature : Array[Int]
+}
+
+pub enum HashAlgorithm {
+  HashNone
+  Md5
+  Sha1
+  Sha224
+  Sha256Alg
+  Sha384
+  Sha512
+}
+
+pub struct InclusionMessage {
+  leaf_index : UInt64
+  audit_path : Array[Array[Int]]
+}
+
 pub struct InclusionProof {
   leaf_index : UInt
   tree_size : UInt
   audit_path : Array[Array[Int]]
+}
+
+pub struct JsonField {
+  key : String
+  value : CtJson
+}
+
+pub struct LogCheckpoint {
+  timestamp : UInt64
+  tree_size : UInt64
+  root_hash : Array[Int]
+}
+
+pub struct MemoryLog {
+  entries : Array[Array[Int]]
+  leaves : Array[Array[Int]]
+  mut latest_timestamp : UInt64
+  mut saw_timestamp : Bool
+}
+pub fn MemoryLog::append(Self, (Array[Int]) -> Array[Int], UInt64, Array[Int]) -> Result[Unit, CtError]
+pub fn MemoryLog::append_v1_leaf(Self, (Array[Int]) -> Array[Int], V1TimestampedEntry) -> Result[Unit, CtError]
+pub fn MemoryLog::audit(Self, (Array[Int]) -> Array[Int]) -> Result[Array[Int], CtError]
+pub fn MemoryLog::checkpoint(Self, (Array[Int]) -> Array[Int], UInt64) -> Result[LogCheckpoint, CtError]
+pub fn MemoryLog::consistency(Self, (Array[Int]) -> Array[Int], UInt64) -> Result[MerkleConsistency, CtError]
+pub fn MemoryLog::entry_at(Self, UInt64) -> Result[Array[Int], CtError]
+pub fn MemoryLog::inclusion(Self, (Array[Int]) -> Array[Int], UInt64) -> Result[MerkleInclusion, CtError]
+pub fn MemoryLog::latest_time(Self) -> Result[UInt64, CtError]
+pub fn MemoryLog::root(Self, (Array[Int]) -> Array[Int]) -> Result[Array[Int], CtError]
+pub fn MemoryLog::root_through(Self, (Array[Int]) -> Array[Int], UInt64) -> Result[Array[Int], CtError]
+pub fn MemoryLog::size(Self) -> UInt64
+pub fn MemoryLog::verify_leaf(Self, (Array[Int]) -> Array[Int], UInt64) -> Result[Unit, CtError]
+pub fn MemoryLog::verify_prefix(Self, (Array[Int]) -> Array[Int], UInt64, Array[Int]) -> Result[Unit, CtError]
+
+pub struct MerkleConsistency {
+  first_size : UInt64
+  second_size : UInt64
+  proof : Array[Array[Int]]
+}
+
+pub struct MerkleInclusion {
+  leaf_index : UInt64
+  tree_size : UInt64
+  path : Array[Array[Int]]
+}
+
+pub enum SignatureAlgorithm {
+  Anonymous
+  Rsa
+  Dsa
+  Ecdsa
+}
+
+pub struct SthMessage {
+  tree_size : UInt64
+  timestamp : UInt64
+  sha256_root_hash : Array[Int]
+  tree_head_signature : Array[Int]
+}
+
+pub enum TransItem {
+  X509EntryV2(V2CertificateEntry)
+  PrecertEntryV2(V2CertificateEntry)
+  X509SctV2(V2SignedCertificateTimestamp)
+  PrecertSctV2(V2SignedCertificateTimestamp)
+  SignedTreeHeadV2(V2SignedTreeHead)
+  ConsistencyProofV2(V2ConsistencyProof)
+  InclusionProofV2(V2InclusionProof)
 }
 
 pub struct TreeHead {
@@ -40,7 +340,90 @@ pub struct TreeHead {
   root_hash : Array[Int]
 }
 
+pub enum V1LeafBody {
+  X509Body(Array[Int])
+  PrecertBody(Array[Int], Array[Int])
+}
+
+pub struct V1MerkleTreeLeaf {
+  entry : V1TimestampedEntry
+}
+
+pub struct V1SignedCertificateTimestamp {
+  log_id : Array[Int]
+  timestamp : UInt64
+  extensions : Array[Int]
+  signature : DigitallySigned
+}
+
+pub struct V1TimestampedEntry {
+  timestamp : UInt64
+  body : V1LeafBody
+  extensions : Array[Int]
+}
+
+pub struct V1TreeHeadSigned {
+  timestamp : UInt64
+  tree_size : UInt64
+  root_hash : Array[Int]
+}
+
+pub struct V2CertificateEntry {
+  timestamp : UInt64
+  issuer_key_hash : Array[Int]
+  tbs_certificate : Array[Int]
+  extensions : Array[CtExtension]
+}
+
+pub struct V2ConsistencyProof {
+  log_id : Array[Int]
+  tree_size_1 : UInt64
+  tree_size_2 : UInt64
+  consistency_path : Array[Array[Int]]
+}
+
+pub struct V2InclusionProof {
+  log_id : Array[Int]
+  tree_size : UInt64
+  leaf_index : UInt64
+  inclusion_path : Array[Array[Int]]
+}
+
+pub struct V2SignedCertificateTimestamp {
+  log_id : Array[Int]
+  timestamp : UInt64
+  extensions : Array[CtExtension]
+  signature : Array[Int]
+}
+
+pub struct V2SignedTreeHead {
+  log_id : Array[Int]
+  tree_head : V2TreeHead
+  signature : Array[Int]
+}
+
+pub struct V2TreeHead {
+  timestamp : UInt64
+  tree_size : UInt64
+  root_hash : Array[Int]
+  extensions : Array[CtExtension]
+}
+
+pub struct WriteGate {
+  writer : ByteWriter
+  mut failed : CtError?
+}
+pub fn WriteGate::finish(Self) -> Result[Array[Int], CtError]
+pub fn WriteGate::put_bytes(Self, Array[Int]) -> Unit
+pub fn WriteGate::put_opaque(Self, Int, Array[Int], Int, Int) -> Unit
+pub fn WriteGate::put_u16(Self, Int) -> Unit
+pub fn WriteGate::put_u24(Self, Int) -> Unit
+pub fn WriteGate::put_u64(Self, UInt64) -> Unit
+pub fn WriteGate::put_u8(Self, Int) -> Unit
+
 // Type aliases
 pub type Hash = Array[Int]
+
+pub type Sha256 = (Array[Int]) -> Array[Int]
 
 // Traits

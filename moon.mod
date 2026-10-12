@@ -11,7 +11,7 @@
 
 name = "Han-Wentao/moonct"
 
-version = "0.1.0"
+version = "0.2.0"
 
 readme = "README.md"
 
@@ -24,8 +24,10 @@ keywords = [
   "merkle",
   "security",
   "proof-verification",
+  "json",
+  "codec",
 ]
 
 preferred_target = "wasm"
 
-description = "Runtime-agnostic Certificate Transparency Merkle proof verification for MoonBit"
+description = "RFC 6962 and RFC 9162 Certificate Transparency proof core for MoonBit"
