@@ -230,9 +230,9 @@ pub fn base64_encode(data : Array[Int]) -> Result[String, CtError] {
 ///|
 fn base64_unused_bits_clear(block : Int, padding : Int) -> Bool {
   if padding == 1 {
-    block % 4 == 0
+    block / 64 % 4 == 0
   } else if padding == 2 {
-    block % 16 == 0
+    block / 4096 % 16 == 0
   } else {
     true
   }
