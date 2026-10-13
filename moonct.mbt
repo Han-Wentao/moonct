@@ -36,6 +36,11 @@ fn valid_hash(hash : Hash) -> Bool {
 }
 
 ///|
+fn ceil_half_uint(value : UInt) -> UInt {
+  value / 2U + value % 2U
+}
+
+///|
 fn same_hash(left : Hash, right : Hash) -> Bool {
   if left.length() != right.length() {
     false
@@ -115,7 +120,7 @@ pub fn proof_shape_valid(proof : InclusionProof) -> Bool {
     let mut expected = 0
     while width > 1U {
       expected = expected + 1
-      width = (width + 1U) / 2U
+      width = ceil_half_uint(width)
     }
     expected == proof.audit_path.length()
   }
@@ -154,7 +159,7 @@ pub fn inclusion_root(
             None => valid = false
           }
           index = index / 2U
-          width = (width + 1U) / 2U
+          width = ceil_half_uint(width)
           path_index = path_index + 1
         }
       }
@@ -215,7 +220,7 @@ pub fn proof_height(tree_size : UInt) -> UInt? {
     let mut width = tree_size
     let mut height = 0U
     while width > 1U {
-      width = (width + 1U) / 2U
+      width = ceil_half_uint(width)
       height = height + 1U
     }
     Some(height)

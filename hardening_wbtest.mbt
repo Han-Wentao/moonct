@@ -22,3 +22,11 @@ test "hash boundaries enforce 32 unsigned bytes" {
     verify_inclusion(mix_hash, filled_hash(0), singleton, malformed_head),
   )
 }
+
+///|
+test "legacy proof height and shape are safe at UInt maximum" {
+  let maximum = 4294967295U
+  assert_eq(proof_height(maximum), Some(32U))
+  let proof = new_inclusion_proof(0U, maximum, Array::make(32, filled_hash(0)))
+  assert_true(proof_shape_valid(proof))
+}
