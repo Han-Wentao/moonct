@@ -3,7 +3,29 @@ on:
   push:
   pull_request:
 jobs:
-  check:
+  target-matrix:
+    name: Check and test (${{ matrix.target }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [wasm-gc, wasm, js, native]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install MoonBit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+      - name: Show MoonBit version
+        run: moon version --all
+      - name: Check target
+        run: moon check --target "${{ matrix.target }}" --deny-warn
+      - name: Test target
+        if: matrix.target != 'wasm'
+        run: moon test --target "${{ matrix.target }}"
+  package:
+    name: Format, interfaces, and runnable example
+    needs: target-matrix
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -11,11 +33,13 @@ jobs:
         run: |
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
-      - name: Check
-        run: moon check --deny-warn
-      - name: Test
-        run: moon test
+      - name: Show MoonBit version
+        run: moon version --all
+      - name: Update and verify generated interfaces
+        run: |
+          moon info
+          git diff --exit-code -- pkg.generated.mbti cmd/main/pkg.generated.mbti
       - name: Format check
         run: moon fmt --check
       - name: Runnable example
-        run: moon run cmd/main
+        run: moon run --target wasm-gc cmd/main
