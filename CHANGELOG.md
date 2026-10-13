@@ -1,11 +1,12 @@
 # Changelog
 
-## 0.2.0 - 2026-10-30
+## 0.2.0 - 2026-10-13
 
-- Added RFC 9162 Merkle tree hashes, minimal inclusion paths, and consistency proofs without changing the legacy inclusion verifier.
-- Added RFC 6962 v1 and RFC 9162 v2 artifact codecs, restricted CT JSON, and an in-memory log.
-- Recorded 4412 physical lines of non-test library MoonBit and 22 passing tests.
-- This version is recorded in `moon.mod`. It is not a new GitHub release.
+- Added RFC 9162 Merkle Tree Hashes, minimal inclusion paths, and consistency proof generation and verification while retaining the legacy RFC 6962 verifier.
+- Added supported RFC 6962 v1 and RFC 9162 v2 artifact codecs, restricted CT JSON, and an in-memory log.
+- Recorded 4,426 physical lines of non-test library MoonBit and 26 passing tests on each of wasm-gc and JavaScript.
+- Documented RFC 6962 Merkle overlap with MoonSecureCodec and MoonEvidence, plus the cross-language CT/Merkle overlap with `@blamejs/pki`; no algorithm-uniqueness claim is made.
+- Added a source-only usage path; MoonCakes.io publication remains separate and has not been performed.
 
 ## 0.1.0 - 2026-10-03
 

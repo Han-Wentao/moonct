@@ -1,41 +1,33 @@
 # MoonCT
 
-MoonCT is a runtime-agnostic MoonBit library for Certificate Transparency proofs and log artifacts. It keeps the original RFC 6962 level-by-level inclusion verifier and adds RFC 9162 Merkle tree hashes, minimal inclusion paths, consistency proofs, v1/v2 wire codecs, restricted CT JSON, and an in-memory log. Callers inject SHA-256 and signature checks. The library does not implement those primitives, parse X.509, or speak HTTP.
+MoonCT is a runtime-agnostic MoonBit library for Certificate Transparency (CT) proof logic and log artifacts. It covers the CT-specific path from proof/tree-head inputs through validation and wire/JSON artifacts; it is not a general-purpose Merkle database. The RFC 6962 leaf/node hashing and inclusion-proof capability overlaps directly with existing MoonBit Merkle libraries; an actively maintained JavaScript PKI toolkit also implements closely related RFC 6962/9162 and CT workflows. The source-level comparison and its impact on the project’s novelty claim are disclosed in [`docs/competition/duplicate-check.md`](docs/competition/duplicate-check.md).
 
-## Two inclusion formats
+## What it implements
 
-The legacy verifier and the RFC 9162 minimal path are not interchangeable.
+- RFC 6962 domain-separated leaf/node hashing and the legacy level-by-level inclusion proof, with tree-size, index, hash-length, and proof-shape checks.
+- RFC 9162 Merkle Tree Hash (recursive and stack forms), minimal inclusion paths, and consistency proof generation/verification.
+- RFC 6962 v1 signed-value, SCT, Merkle-leaf, and tree-head input codecs; RFC 9162 v2 TransItem codecs for the supported `0x0100`–`0x0106` range.
+- Restricted CT JSON encoding/decoding for STH, inclusion, and consistency messages.
+- An in-memory log with monotonic timestamps, checkpoints, inclusion proofs, and consistency proofs.
 
-- `proof_height(7)` is `Some(3)`. Every legacy inclusion proof for a tree of size 7 has three siblings.
-- `inclusion_path` for index 6 in that same tree has length 2.
-- `consistency_proof` from size 4 to size 7 has length 1.
-- `proof_shape_valid` rejects the length-2 RFC 9162 path when it is presented to the legacy verifier.
+The library does **not** implement SHA-256, signature algorithms, X.509/ASN.1/DER parsing, network clients, CT log servers, or log-key discovery. Hashing and STH signature verification are supplied by the caller. Passing an injected test hash does not constitute cryptographic verification.
 
-Equal tree sizes use an empty consistency proof only when the two roots match. A zero first size, or a first size larger than the second, is `BadIndex`. When the sizes differ, an empty consistency path fails before the power-of-two prepend.
+## Proof-format boundary
 
-## Scope
+The legacy RFC 6962 proof and RFC 9162 minimal inclusion path are different formats. For a tree of size 7, `proof_height(7)` is 3, while `inclusion_path` for index 6 has length 2. The consistency proof from size 4 to size 7 has length 1. `proof_shape_valid` prevents the shorter RFC 9162 path from being passed as a legacy proof. Equal-size consistency proofs are empty and accepted only when the roots match; invalid size relationships are rejected.
 
-Included:
+## Try it from source
 
-- legacy leaf and node domain separation and inclusion folding
-- RFC 9162 recursive and stack Merkle tree hashes
-- RFC 9162 inclusion and consistency generation and verification
-- RFC 6962 v1 Merkle leaves, SCTs, digitally signed values, and tree-head signed input
-- RFC 9162 v2 TransItem values `0x0100` through `0x0106`
-- RFC 6962 JSON for STH, inclusion, and consistency messages
-- an in-memory log with monotonic timestamps, checkpoints, and proof export
+This repository is the available distribution. **MoonCT has not been published to MoonCakes.io**, so `moon add Han-Wentao/moonct@0.2.0` is not an available installation command. MoonCakes publication is intentionally separate.
 
-Excluded:
+```sh
+git clone https://github.com/Han-Wentao/moonct.git
+cd moonct
+moon test --target wasm-gc
+moon run --target wasm-gc cmd/main
+```
 
-- SHA-256, ECDSA, Ed25519, and any other cryptographic primitive
-- X.509, ASN.1, and DER parsing
-- HTTP clients, CT log servers, and key discovery
-
-Public bytes stay `Array[Int]`. Legacy tree size and leaf index stay `UInt`. New CT sizes and timestamps use `UInt64`. Node hashes are 32 bytes.
-
-## Example
-
-`moon run cmd/main` builds seven sample leaves with an injected mix function, not SHA-256, and prints:
+The runnable demonstration uses a deterministic sample hash (not SHA-256) and prints:
 
 ```text
 legacy inclusion height for tree size 7: 3
@@ -43,21 +35,25 @@ RFC 9162 inclusion path length for index 6: 2
 RFC 9162 consistency proof length from 4 to 7: 1
 ```
 
+The generated public interface is in [`pkg.generated.mbti`](pkg.generated.mbti); package and protocol notes are in [`docs/api-design.md`](docs/api-design.md) and [`docs/protocol-boundary.md`](docs/protocol-boundary.md).
+
 ## Verification
 
-Commands run for this expansion:
+Run these commands from the repository root:
 
-```text
+```sh
 moon fmt --check
-moon check --deny-warn
-moon check --deny-warn --target wasm-gc
-moon check --deny-warn --target js
-moon test
-moon run cmd/main
+moon check --target wasm --deny-warn
+moon check --target wasm-gc --deny-warn
+moon check --target js --deny-warn
+moon check --target native --deny-warn
+moon test --target wasm-gc
+moon test --target js
+moon run --target wasm-gc cmd/main
 ```
 
-`moon check --deny-warn` passes for the default wasm target, wasm-gc, and js. Native was not run because this environment has no C toolchain. `moon test` passes 22 tests. Non-test library `.mbt` sources, excluding `cmd/`, tests, and generated `.mbti`, contain 4412 physical lines. The per-file count is in `docs/protocol-boundary.md`.
+On the recorded local run, both test targets passed all 26 tests; all four `moon check --deny-warn` targets passed. Native tests could not be executed locally because no `cc`, `gcc`, or `clang` is installed; the CI workflow includes native tests. The implementation count is 4,426 physical lines across non-test library `.mbt` files; see the per-file accounting in [`docs/protocol-boundary.md`](docs/protocol-boundary.md).
 
-## License
+## License and disclosure
 
-Apache-2.0. MoonCT is an original MoonBit implementation of the public RFC 6962 and RFC 9162 descriptions. It does not copy another project's source.
+Apache-2.0. AI assistance is disclosed in [`AI-USE.md`](AI-USE.md). No third-party implementation source is included as a dependency.

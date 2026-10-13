@@ -1,13 +1,22 @@
 # MoonCT 0.2.0
 
-Version 0.2.0 expands the local library. It is recorded in `moon.mod` and these notes. It has not been published as a GitHub release.
+MoonCT 0.2.0 expands the CT-specific protocol surface while preserving the legacy RFC 6962 inclusion verifier. It adds RFC 9162 tree hashes, minimal inclusion paths, consistency proofs, supported v1/v2 artifact codecs, restricted CT JSON, and in-memory log checkpoints.
 
-The expansion keeps `verify_inclusion` behavior and adds RFC 9162 tree hashes, minimal inclusion paths, consistency proofs, v1 and v2 codecs, CT JSON, and an in-memory log. Cryptography, X.509 parsing, and network I/O remain outside the package.
+This is an original MoonBit implementation of protocol behavior, not a port of a third-party codebase. The RFC 6962 Merkle inclusion algorithm overlaps with MoonSecureCodec and MoonEvidence. GitHub also has an actively maintained JavaScript PKI toolkit, `@blamejs/pki`, with closely related RFC 6962/9162 proof and CT workflows. MoonCT is not claimed as a globally unique algorithm or a drop-in replacement for that PKI stack. See the dated source-level review in `docs/competition/duplicate-check.md`.
 
-Validation for this expansion: 22 MoonBit tests pass, `moon check --deny-warn` passes on wasm, wasm-gc, and js, formatting passes, and `moon run cmd/main` prints 3, 2, and 1. Non-test library sources contain 4412 physical lines.
+## Verification
+
+- `moon fmt --check` passed.
+- `moon check --deny-warn` passed for wasm, wasm-gc, js, and native.
+- `moon test --target wasm-gc` and `moon test --target js` each passed 26 tests.
+- The local native test could not run because the environment has no `cc`, `gcc`, or `clang`; the repository CI workflow runs the native test target.
+- `moon run --target wasm-gc cmd/main` printed the expected proof measurements `3`, `2`, and `1`.
+- Non-test library implementation contains 4,426 physical `.mbt` lines.
+
+Cryptographic primitives, certificate parsing, and network access remain caller responsibilities and are not implemented here. The package is available from this GitHub source repository; it has not been uploaded to MoonCakes.io.
 
 # MoonCT 0.1.0
 
-MoonCT 0.1.0 is the first reusable MoonBit Certificate Transparency proof core. It verifies RFC 6962 inclusion paths against a supplied tree head, validates proof shape before hashing, and delegates cryptographic primitives to the host.
+MoonCT 0.1.0 was the initial RFC 6962 inclusion-proof core. It validated proof shape and delegated cryptographic primitives to the host.
 
-Validation performed for this release: 14 MoonBit tests pass, `moon check --deny-warn` passes, formatting passes, and the runnable command example reports a bounded proof height.
+The recorded initial validation was 14 passing MoonBit tests, warning-free checks, formatting, and a runnable proof-height example.
