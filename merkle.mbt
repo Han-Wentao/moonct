@@ -1,6 +1,6 @@
 ///|
 /// Caller-supplied SHA-256. MoonCT never implements the hash itself.
-pub type Sha256 = (Array[Int]) -> Hash
+pub type Sha256 = (Array[Int32]) -> Hash
 
 ///|
 /// RFC 9162 minimal inclusion path. This is not the legacy level-fold proof.
@@ -19,7 +19,7 @@ pub struct MerkleConsistency {
 }
 
 ///|
-fn u64_as_int(value : UInt64) -> Result[Int, CtError] {
+fn u64_as_int(value : UInt64) -> Result[Int32, CtError] {
   if value > 2147483647UL {
     Err(CtError::Overflow)
   } else {
@@ -59,7 +59,7 @@ pub fn empty_tree_hash(sha256 : Sha256) -> Result[Hash, CtError] {
 }
 
 ///|
-fn hash_leaf(sha256 : Sha256, entry : Array[Int]) -> Result[Hash, CtError] {
+fn hash_leaf(sha256 : Sha256, entry : Array[Int32]) -> Result[Hash, CtError] {
   match leaf_hash(sha256, entry) {
     Some(hash) => Ok(hash)
     None => Err(CtError::BadHash)
@@ -81,9 +81,9 @@ fn hash_node(
 ///|
 fn hash_range(
   sha256 : Sha256,
-  entries : Array[Array[Int]],
-  start : Int,
-  end : Int,
+  entries : Array[Array[Int32]],
+  start : Int32,
+  end : Int32,
 ) -> Result[Hash, CtError] {
   let count = end - start
   if count < 0 || start < 0 || end > entries.length() {
@@ -109,13 +109,13 @@ fn hash_range(
 /// RFC 9162 Merkle Tree Hash of raw log entries.
 pub fn merkle_tree_hash(
   sha256 : Sha256,
-  entries : Array[Array[Int]],
+  entries : Array[Array[Int32]],
 ) -> Result[Hash, CtError] {
   hash_range(sha256, entries, 0, entries.length())
 }
 
 ///|
-fn trailing_ones(index : Int) -> Int {
+fn trailing_ones(index : Int32) -> Int32 {
   let mut count = 0
   let mut value = index
   while value % 2 == 1 {
@@ -156,7 +156,7 @@ fn merge_top(sha256 : Sha256, stack : Array[Hash]) -> Result[Unit, CtError] {
 /// Iterative RFC 9162 tree hash. It must agree with `merkle_tree_hash`.
 pub fn merkle_tree_hash_by_stack(
   sha256 : Sha256,
-  entries : Array[Array[Int]],
+  entries : Array[Array[Int32]],
 ) -> Result[Hash, CtError] {
   if entries.length() == 0 {
     empty_tree_hash(sha256)
@@ -203,10 +203,10 @@ pub fn merkle_tree_hash_by_stack(
 ///|
 fn path_range(
   sha256 : Sha256,
-  entries : Array[Array[Int]],
-  start : Int,
-  end : Int,
-  index : Int,
+  entries : Array[Array[Int32]],
+  start : Int32,
+  end : Int32,
+  index : Int32,
 ) -> Result[Array[Hash], CtError] {
   let count = end - start
   if count <= 0 || index < 0 || index >= count {
@@ -247,7 +247,7 @@ fn path_range(
 /// Build the minimal RFC 9162 inclusion path for one raw entry.
 pub fn inclusion_path(
   sha256 : Sha256,
-  entries : Array[Array[Int]],
+  entries : Array[Array[Int32]],
   index : UInt64,
 ) -> Result[MerkleInclusion, CtError] {
   let tree_size = entries.length().to_uint64()
@@ -344,10 +344,10 @@ pub fn require_merkle_inclusion(
 ///|
 fn subproof(
   sha256 : Sha256,
-  entries : Array[Array[Int]],
-  start : Int,
-  end : Int,
-  count : Int,
+  entries : Array[Array[Int32]],
+  start : Int32,
+  end : Int32,
+  count : Int32,
   known : Bool,
 ) -> Result[Array[Hash], CtError] {
   let width = end - start
@@ -398,7 +398,7 @@ fn subproof(
 /// strict prefix.
 pub fn consistency_proof(
   sha256 : Sha256,
-  entries : Array[Array[Int]],
+  entries : Array[Array[Int32]],
   first_size : UInt64,
 ) -> Result[MerkleConsistency, CtError] {
   let second_size = entries.length().to_uint64()

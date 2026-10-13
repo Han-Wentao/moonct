@@ -1,8 +1,8 @@
 # MoonCT Git 提交有效性审计
 
-完成本轮审计文档提交后，仓库历史为 31 个原始提交；本表选出其中 20 个彼此可区分、可由文件差异复核的实质提交，达到项目 Skill 的 20 个有效提交门槛。SHA 均为完整值。
+完成本轮兼容性与审计更新后，仓库历史为 32 个原始提交；本表选出其中 20 个彼此可区分、可由文件差异复核的实质提交，达到项目 Skill 的 20 个有效提交门槛。SHA 均为完整值。本轮额外兼容提交将 Int 别名规范化为显式 Int32，以满足新版 MoonBit 格式检查；该提交不计入 20 个有效提交。
 
-表内验证证据指最终 HEAD 上保留的实现/测试及本次本地复验：`moon info`、`moon fmt`、`moon check --deny-warn`（wasm/wasm-gc/js/native）、`moon test`（wasm-gc/js，各 26 项）、可运行示例。native 测试需由 GitHub CI 验证，本机没有 C 编译器。
+表内验证证据指最终 HEAD 上保留的实现/测试及本次本地复验：`moon info`、`moon fmt --check`、`moon check --deny-warn`（wasm/wasm-gc/js/native）、`moon test`（wasm-gc/js，各 26 项）、可运行示例。Windows 本机 `moon test --target native` 因缺少 MSVC/Windows SDK 而无法构建；不声称本地 native 测试通过，最终推送后的 Linux GitHub CI 负责验证 native 测试。
 
 | SHA | 主题 | 变更文件 | 实质工作与验证证据 |
 | --- | --- | --- | --- |
@@ -29,4 +29,4 @@
 
 ## 审计结论
 
-未把空提交、仅格式化提交或单纯删除文件计入这 20 项。该表不把 31 个原始提交一概宣称有效；它只对列出的 20 个提交给出可核查的工程目的和最终验证证据。native 测试未在本机执行；推送后的 GitHub Actions 运行状态另行核验。
+未把空提交、仅格式化提交或单纯删除文件计入这 20 项。该表不把 32 个原始提交一概宣称有效；它只对列出的 20 个提交给出可核查的工程目的和最终验证证据。本轮新版格式兼容提交不算作有效提交；native 测试未在本机执行，最终 GitHub Actions 运行状态在提交后单独核验。

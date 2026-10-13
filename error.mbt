@@ -4,7 +4,7 @@ pub enum CtError {
   Truncated
   BadLength
   BadByte
-  BadEnum(Int)
+  BadEnum(Int32)
   BadHash
   BadIndex
   BadProof

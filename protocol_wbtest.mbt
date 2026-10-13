@@ -1,5 +1,5 @@
 ///|
-fn mix_hash(input : Array[Int]) -> Array[Int] {
+fn mix_hash(input : Array[Int32]) -> Array[Int32] {
   let out = Array(capacity=32)
   for _ in 0..<32 {
     out.push(0)
@@ -16,7 +16,7 @@ fn mix_hash(input : Array[Int]) -> Array[Int] {
 }
 
 ///|
-fn sample_entries() -> Array[Array[Int]] {
+fn sample_entries() -> Array[Array[Int32]] {
   let entries = Array(capacity=7)
   for i in 0..<7 {
     entries.push([i, i + 1, 9])
@@ -25,7 +25,7 @@ fn sample_entries() -> Array[Array[Int]] {
 }
 
 ///|
-fn filled_hash(value : Int) -> Array[Int] {
+fn filled_hash(value : Int32) -> Array[Int32] {
   let out = Array(capacity=32)
   for _ in 0..<32 {
     out.push(value)
@@ -60,7 +60,7 @@ fn expect_path(path : Array[Hash], hexes : Array[String]) -> Unit raise {
 }
 
 ///|
-fn round_trans(item : TransItem, code : Int) -> Unit raise {
+fn round_trans(item : TransItem, code : Int32) -> Unit raise {
   assert_eq(trans_type_code(item), code)
   match encode_trans_item(item) {
     Err(_) => assert_true(false)

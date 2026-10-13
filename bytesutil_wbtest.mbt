@@ -1,6 +1,6 @@
 ///|
 test "base64 matches RFC 4648 vectors and rejects non-canonical pad bits" {
-  let cases : Array[(String, Array[Int])] = [
+  let cases : Array[(String, Array[Int32])] = [
     ("", []),
     ("Zg==", [102]),
     ("Zm8=", [102, 111]),

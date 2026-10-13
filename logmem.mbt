@@ -9,7 +9,7 @@ pub struct LogCheckpoint {
 ///|
 /// In-memory RFC 6962 log. Entries are raw Merkle tree leaves, not parsed certificates.
 pub struct MemoryLog {
-  entries : Array[Array[Int]]
+  entries : Array[Array[Int32]]
   leaves : Array[Hash]
   mut latest_timestamp : UInt64
   mut saw_timestamp : Bool
@@ -58,7 +58,7 @@ fn timestamp_in_order(
 fn MemoryLog::remember(
   self : Self,
   timestamp : UInt64,
-  entry : Array[Int],
+  entry : Array[Int32],
   leaf : Hash,
 ) -> Unit {
   self.entries.push(entry)
@@ -73,7 +73,7 @@ pub fn MemoryLog::append(
   self : Self,
   sha256 : Sha256,
   timestamp : UInt64,
-  entry : Array[Int],
+  entry : Array[Int32],
 ) -> Result[Unit, CtError] {
   match timestamp_in_order(self, timestamp) {
     Err(err) => Err(err)
@@ -115,7 +115,7 @@ pub fn MemoryLog::append_v1_leaf(
 pub fn MemoryLog::entry_at(
   self : Self,
   index : UInt64,
-) -> Result[Array[Int], CtError] {
+) -> Result[Array[Int32], CtError] {
   match u64_as_int(index) {
     Err(err) => Err(err)
     Ok(at) =>
@@ -154,7 +154,7 @@ fn leaves_match(log : MemoryLog, sha256 : Sha256) -> Result[Unit, CtError] {
 ///|
 fn roots_agree(
   sha256 : Sha256,
-  entries : Array[Array[Int]],
+  entries : Array[Array[Int32]],
 ) -> Result[Hash, CtError] {
   match merkle_tree_hash(sha256, entries) {
     Err(err) => Err(err)
@@ -183,8 +183,8 @@ pub fn MemoryLog::root(self : Self, sha256 : Sha256) -> Result[Hash, CtError] {
 ///|
 fn prefix_entries(
   log : MemoryLog,
-  count : Int,
-) -> Result[Array[Array[Int]], CtError] {
+  count : Int32,
+) -> Result[Array[Array[Int32]], CtError] {
   if count < 0 || count > log.entries.length() {
     Err(CtError::BadIndex)
   } else {
@@ -325,7 +325,7 @@ pub fn MemoryLog::checkpoint(
 /// Encode a checkpoint as an RFC 6962 get-sth JSON object.
 pub fn encode_checkpoint_sth(
   checkpoint : LogCheckpoint,
-  signature : Array[Int],
+  signature : Array[Int32],
 ) -> Result[String, CtError] {
   if !bytes_in_range(checkpoint.root_hash) {
     Err(CtError::BadByte)

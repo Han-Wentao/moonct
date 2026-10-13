@@ -1,6 +1,6 @@
 ///|
 /// Copy bytes so callers cannot alias a writer or log buffer.
-pub fn bytes_copy(data : Array[Int]) -> Array[Int] {
+pub fn bytes_copy(data : Array[Int32]) -> Array[Int32] {
   let out = Array(capacity=data.length())
   for i in 0..<data.length() {
     out.push(data[i])
@@ -10,7 +10,7 @@ pub fn bytes_copy(data : Array[Int]) -> Array[Int] {
 
 ///|
 /// Report whether two byte arrays are the same length and contents.
-pub fn bytes_equal(left : Array[Int], right : Array[Int]) -> Bool {
+pub fn bytes_equal(left : Array[Int32], right : Array[Int32]) -> Bool {
   if left.length() != right.length() {
     false
   } else {
@@ -28,7 +28,7 @@ pub fn bytes_equal(left : Array[Int], right : Array[Int]) -> Bool {
 
 ///|
 /// Return true when every element is an unsigned byte.
-pub fn bytes_in_range(data : Array[Int]) -> Bool {
+pub fn bytes_in_range(data : Array[Int32]) -> Bool {
   let mut valid = true
   let mut i = 0
   while i < data.length() && valid {
@@ -43,10 +43,10 @@ pub fn bytes_in_range(data : Array[Int]) -> Bool {
 ///|
 /// Copy an inclusive-exclusive slice.
 pub fn bytes_slice(
-  data : Array[Int],
-  start : Int,
-  end : Int,
-) -> Result[Array[Int], CtError] {
+  data : Array[Int32],
+  start : Int32,
+  end : Int32,
+) -> Result[Array[Int32], CtError] {
   if start < 0 || end < start || end > data.length() {
     Err(CtError::BadLength)
   } else {
@@ -60,7 +60,7 @@ pub fn bytes_slice(
 
 ///|
 /// Concatenate two byte arrays.
-pub fn bytes_concat(left : Array[Int], right : Array[Int]) -> Array[Int] {
+pub fn bytes_concat(left : Array[Int32], right : Array[Int32]) -> Array[Int32] {
   let out = Array(capacity=left.length() + right.length())
   for i in 0..<left.length() {
     out.push(left[i])
@@ -73,7 +73,7 @@ pub fn bytes_concat(left : Array[Int], right : Array[Int]) -> Array[Int] {
 
 ///|
 /// Concatenate a list of byte arrays in order.
-pub fn bytes_concat_all(parts : Array[Array[Int]]) -> Array[Int] {
+pub fn bytes_concat_all(parts : Array[Array[Int32]]) -> Array[Int32] {
   let mut total = 0
   for i in 0..<parts.length() {
     total = total + parts[i].length()
@@ -90,7 +90,7 @@ pub fn bytes_concat_all(parts : Array[Array[Int]]) -> Array[Int] {
 
 ///|
 /// Report whether `data` begins with `prefix`.
-pub fn bytes_has_prefix(data : Array[Int], prefix : Array[Int]) -> Bool {
+pub fn bytes_has_prefix(data : Array[Int32], prefix : Array[Int32]) -> Bool {
   if prefix.length() > data.length() {
     false
   } else {
@@ -107,7 +107,7 @@ pub fn bytes_has_prefix(data : Array[Int], prefix : Array[Int]) -> Bool {
 }
 
 ///|
-fn hex_nibble(value : Int) -> Char {
+fn hex_nibble(value : Int32) -> Char {
   if value < 10 {
     (48 + value).unsafe_to_char()
   } else {
@@ -116,7 +116,7 @@ fn hex_nibble(value : Int) -> Char {
 }
 
 ///|
-fn hex_value(ch : Char) -> Int? {
+fn hex_value(ch : Char) -> Int32? {
   let code = ch.to_int()
   if code >= 48 && code <= 57 {
     Some(code - 48)
@@ -131,7 +131,7 @@ fn hex_value(ch : Char) -> Int? {
 
 ///|
 /// Encode bytes as lowercase hexadecimal.
-pub fn hex_encode(data : Array[Int]) -> Result[String, CtError] {
+pub fn hex_encode(data : Array[Int32]) -> Result[String, CtError] {
   if !bytes_in_range(data) {
     Err(CtError::BadByte)
   } else {
@@ -147,7 +147,7 @@ pub fn hex_encode(data : Array[Int]) -> Result[String, CtError] {
 
 ///|
 /// Decode lowercase or uppercase hexadecimal. Odd lengths are rejected.
-pub fn hex_decode(text : String) -> Result[Array[Int], CtError] {
+pub fn hex_decode(text : String) -> Result[Array[Int32], CtError] {
   if text.length() % 2 != 0 {
     Err(CtError::BadLength)
   } else {
@@ -179,9 +179,9 @@ fn base64_alphabet() -> String {
 }
 
 ///|
-fn base64_value(ch : Char) -> Int? {
+fn base64_value(ch : Char) -> Int32? {
   let alphabet = base64_alphabet()
-  let mut found : Int? = None
+  let mut found : Int32? = None
   let mut i = 0
   while i < alphabet.length() && found is None {
     if alphabet.get_char(i).unwrap() == ch {
@@ -194,7 +194,7 @@ fn base64_value(ch : Char) -> Int? {
 
 ///|
 /// Encode bytes with standard padded base64.
-pub fn base64_encode(data : Array[Int]) -> Result[String, CtError] {
+pub fn base64_encode(data : Array[Int32]) -> Result[String, CtError] {
   if !bytes_in_range(data) {
     Err(CtError::BadByte)
   } else {
@@ -228,7 +228,7 @@ pub fn base64_encode(data : Array[Int]) -> Result[String, CtError] {
 }
 
 ///|
-fn base64_unused_bits_clear(block : Int, padding : Int) -> Bool {
+fn base64_unused_bits_clear(block : Int32, padding : Int32) -> Bool {
   if padding == 1 {
     block / 64 % 4 == 0
   } else if padding == 2 {
@@ -240,7 +240,7 @@ fn base64_unused_bits_clear(block : Int, padding : Int) -> Bool {
 
 ///|
 /// Decode standard padded base64 and reject non-canonical padding bits.
-pub fn base64_decode(text : String) -> Result[Array[Int], CtError] {
+pub fn base64_decode(text : String) -> Result[Array[Int32], CtError] {
   if text.length() == 0 {
     Ok([])
   } else if text.length() % 4 != 0 {

@@ -19,7 +19,7 @@ pub enum CtJson {
 ///|
 priv struct JsonCursor {
   text : String
-  mut at : Int
+  mut at : Int32
 }
 
 ///|
@@ -73,7 +73,7 @@ fn JsonCursor::skip_ws(self : Self) -> Unit {
 }
 
 ///|
-fn u64_push_digit(acc : UInt64, digit : Int) -> Result[UInt64, CtError] {
+fn u64_push_digit(acc : UInt64, digit : Int32) -> Result[UInt64, CtError] {
   let limit = 0x1999999999999999UL
   let max = 0xFFFFFFFFFFFFFFFFUL
   if digit < 0 || digit > 9 {
@@ -500,7 +500,7 @@ pub fn parse_ct_json(text : String) -> Result[CtJson, CtError] {
 }
 
 ///|
-fn append_u_escape(buf : StringBuilder, code : Int) -> Unit {
+fn append_u_escape(buf : StringBuilder, code : Int32) -> Unit {
   buf.write_string("\\u00")
   buf.write_char(hex_nibble(code / 16 % 16))
   buf.write_char(hex_nibble(code % 16))
@@ -634,7 +634,7 @@ pub struct SthMessage {
   tree_size : UInt64
   timestamp : UInt64
   sha256_root_hash : Hash
-  tree_head_signature : Array[Int]
+  tree_head_signature : Array[Int32]
 }
 
 ///|
@@ -715,7 +715,7 @@ fn json_u64(value : CtJson) -> Result[UInt64, CtError] {
 }
 
 ///|
-fn json_required_bytes(value : CtJson) -> Result[Array[Int], CtError] {
+fn json_required_bytes(value : CtJson) -> Result[Array[Int32], CtError] {
   match value {
     JsonString(text) =>
       if text.length() == 0 {
@@ -847,7 +847,7 @@ fn hash_b64(hash : Hash) -> Result[String, CtError] {
 }
 
 ///|
-fn bytes_b64(data : Array[Int]) -> Result[String, CtError] {
+fn bytes_b64(data : Array[Int32]) -> Result[String, CtError] {
   if !bytes_in_range(data) {
     Err(CtError::BadByte)
   } else if data.length() == 0 {

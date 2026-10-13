@@ -22,8 +22,8 @@ pub enum SignatureAlgorithm {
 ///|
 /// Certificate or precertificate body carried by a v1 timestamped entry.
 pub enum V1LeafBody {
-  X509Body(Array[Int])
-  PrecertBody(Array[Int], Array[Int])
+  X509Body(Array[Int32])
+  PrecertBody(Array[Int32], Array[Int32])
 }
 
 ///|
@@ -31,7 +31,7 @@ pub enum V1LeafBody {
 pub struct DigitallySigned {
   hash_algorithm : HashAlgorithm
   signature_algorithm : SignatureAlgorithm
-  signature : Array[Int]
+  signature : Array[Int32]
 }
 
 ///|
@@ -39,7 +39,7 @@ pub struct DigitallySigned {
 pub struct V1TimestampedEntry {
   timestamp : UInt64
   body : V1LeafBody
-  extensions : Array[Int]
+  extensions : Array[Int32]
 }
 
 ///|
@@ -51,9 +51,9 @@ pub struct V1MerkleTreeLeaf {
 ///|
 /// RFC 6962 SignedCertificateTimestamp without the signed certificate bytes.
 pub struct V1SignedCertificateTimestamp {
-  log_id : Array[Int]
+  log_id : Array[Int32]
   timestamp : UInt64
-  extensions : Array[Int]
+  extensions : Array[Int32]
   signature : DigitallySigned
 }
 
@@ -66,7 +66,7 @@ pub struct V1TreeHeadSigned {
 }
 
 ///|
-pub fn hash_algorithm_code(algorithm : HashAlgorithm) -> Int {
+pub fn hash_algorithm_code(algorithm : HashAlgorithm) -> Int32 {
   match algorithm {
     HashNone => 0
     Md5 => 1
@@ -80,7 +80,7 @@ pub fn hash_algorithm_code(algorithm : HashAlgorithm) -> Int {
 
 ///|
 /// Map a wire byte to a hash algorithm. Unknown codes are `BadEnum`.
-pub fn hash_algorithm_from_code(code : Int) -> Result[HashAlgorithm, CtError] {
+pub fn hash_algorithm_from_code(code : Int32) -> Result[HashAlgorithm, CtError] {
   if code == 0 {
     Ok(HashAlgorithm::HashNone)
   } else if code == 1 {
@@ -101,7 +101,7 @@ pub fn hash_algorithm_from_code(code : Int) -> Result[HashAlgorithm, CtError] {
 }
 
 ///|
-pub fn signature_algorithm_code(algorithm : SignatureAlgorithm) -> Int {
+pub fn signature_algorithm_code(algorithm : SignatureAlgorithm) -> Int32 {
   match algorithm {
     Anonymous => 0
     Rsa => 1
@@ -112,7 +112,7 @@ pub fn signature_algorithm_code(algorithm : SignatureAlgorithm) -> Int {
 
 ///|
 pub fn signature_algorithm_from_code(
-  code : Int,
+  code : Int32,
 ) -> Result[SignatureAlgorithm, CtError] {
   if code == 0 {
     Ok(SignatureAlgorithm::Anonymous)
@@ -152,7 +152,7 @@ fn validate_v1_body(body : V1LeafBody) -> Result[Unit, CtError] {
 }
 
 ///|
-pub fn v1_x509_body(certificate : Array[Int]) -> Result[V1LeafBody, CtError] {
+pub fn v1_x509_body(certificate : Array[Int32]) -> Result[V1LeafBody, CtError] {
   let body = V1LeafBody::X509Body(bytes_copy(certificate))
   match validate_v1_body(body) {
     Err(err) => Err(err)
@@ -162,8 +162,8 @@ pub fn v1_x509_body(certificate : Array[Int]) -> Result[V1LeafBody, CtError] {
 
 ///|
 pub fn v1_precert_body(
-  issuer_key_hash : Array[Int],
-  tbs_certificate : Array[Int],
+  issuer_key_hash : Array[Int32],
+  tbs_certificate : Array[Int32],
 ) -> Result[V1LeafBody, CtError] {
   let body = V1LeafBody::PrecertBody(
     bytes_copy(issuer_key_hash),
@@ -188,7 +188,7 @@ fn copy_v1_body(body : V1LeafBody) -> V1LeafBody {
 pub fn new_digitally_signed(
   hash_algorithm : HashAlgorithm,
   signature_algorithm : SignatureAlgorithm,
-  signature : Array[Int],
+  signature : Array[Int32],
 ) -> Result[DigitallySigned, CtError] {
   if !bytes_in_range(signature) {
     Err(CtError::BadByte)
@@ -207,7 +207,7 @@ pub fn new_digitally_signed(
 pub fn new_v1_timestamped_entry(
   timestamp : UInt64,
   body : V1LeafBody,
-  extensions : Array[Int],
+  extensions : Array[Int32],
 ) -> Result[V1TimestampedEntry, CtError] {
   if !bytes_in_range(extensions) {
     Err(CtError::BadByte)
@@ -227,7 +227,7 @@ pub fn new_v1_timestamped_entry(
 }
 
 ///|
-fn validate_v1_log_id(log_id : Array[Int]) -> Result[Unit, CtError] {
+fn validate_v1_log_id(log_id : Array[Int32]) -> Result[Unit, CtError] {
   if !bytes_in_range(log_id) {
     Err(CtError::BadByte)
   } else if log_id.length() != 32 {
@@ -239,9 +239,9 @@ fn validate_v1_log_id(log_id : Array[Int]) -> Result[Unit, CtError] {
 
 ///|
 pub fn new_v1_sct(
-  log_id : Array[Int],
+  log_id : Array[Int32],
   timestamp : UInt64,
-  extensions : Array[Int],
+  extensions : Array[Int32],
   signature : DigitallySigned,
 ) -> Result[V1SignedCertificateTimestamp, CtError] {
   match validate_v1_log_id(log_id) {
@@ -280,7 +280,7 @@ fn WriteGate::put_digitally_signed(
 ///|
 pub fn encode_digitally_signed(
   value : DigitallySigned,
-) -> Result[Array[Int], CtError] {
+) -> Result[Array[Int32], CtError] {
   let gate = new_write_gate()
   gate.put_digitally_signed(value)
   gate.finish()
@@ -315,7 +315,7 @@ fn ByteReader::read_digitally_signed(
 
 ///|
 pub fn decode_digitally_signed(
-  bytes : Array[Int],
+  bytes : Array[Int32],
 ) -> Result[DigitallySigned, CtError] {
   let reader = new_byte_reader(bytes)
   match reader.read_digitally_signed() {
@@ -405,7 +405,7 @@ fn ByteReader::read_v1_timestamped_entry(
 ///|
 pub fn encode_v1_timestamped_entry(
   entry : V1TimestampedEntry,
-) -> Result[Array[Int], CtError] {
+) -> Result[Array[Int32], CtError] {
   let gate = new_write_gate()
   gate.put_v1_timestamped_entry(entry)
   gate.finish()
@@ -413,7 +413,7 @@ pub fn encode_v1_timestamped_entry(
 
 ///|
 pub fn decode_v1_timestamped_entry(
-  bytes : Array[Int],
+  bytes : Array[Int32],
 ) -> Result[V1TimestampedEntry, CtError] {
   let reader = new_byte_reader(bytes)
   match reader.read_v1_timestamped_entry() {
@@ -440,7 +440,7 @@ fn WriteGate::put_v1_merkle_leaf(
 /// Encode a v1 MerkleTreeLeaf. The version and leaf type are both written as 0.
 pub fn encode_v1_merkle_leaf(
   entry : V1TimestampedEntry,
-) -> Result[Array[Int], CtError] {
+) -> Result[Array[Int32], CtError] {
   let gate = new_write_gate()
   gate.put_v1_merkle_leaf(entry)
   gate.finish()
@@ -474,7 +474,7 @@ fn ByteReader::read_v1_merkle_leaf(
 
 ///|
 pub fn decode_v1_merkle_leaf(
-  bytes : Array[Int],
+  bytes : Array[Int32],
 ) -> Result[V1MerkleTreeLeaf, CtError] {
   let reader = new_byte_reader(bytes)
   match reader.read_v1_merkle_leaf() {
@@ -508,7 +508,7 @@ fn WriteGate::put_v1_sct(
 ///|
 pub fn encode_v1_sct(
   sct : V1SignedCertificateTimestamp,
-) -> Result[Array[Int], CtError] {
+) -> Result[Array[Int32], CtError] {
   let gate = new_write_gate()
   gate.put_v1_sct(sct)
   gate.finish()
@@ -547,7 +547,7 @@ fn ByteReader::read_v1_sct(
 
 ///|
 pub fn decode_v1_sct(
-  bytes : Array[Int],
+  bytes : Array[Int32],
 ) -> Result[V1SignedCertificateTimestamp, CtError] {
   let reader = new_byte_reader(bytes)
   match reader.read_v1_sct() {
@@ -561,7 +561,7 @@ pub fn decode_v1_sct(
 }
 
 ///|
-fn WriteGate::put_v1_signed_prefix(self : Self, signature_type : Int) -> Unit {
+fn WriteGate::put_v1_signed_prefix(self : Self, signature_type : Int32) -> Unit {
   self.put_u8(0)
   self.put_u8(signature_type)
 }
@@ -570,7 +570,7 @@ fn WriteGate::put_v1_signed_prefix(self : Self, signature_type : Int) -> Unit {
 /// Bytes covered by a v1 SCT signature. This is not a MerkleTreeLeaf.
 pub fn v1_sct_signed_input(
   entry : V1TimestampedEntry,
-) -> Result[Array[Int], CtError] {
+) -> Result[Array[Int32], CtError] {
   let gate = new_write_gate()
   gate.put_v1_signed_prefix(0)
   gate.put_v1_timestamped_entry(entry)
@@ -583,7 +583,7 @@ pub fn v1_tree_head_signed_input(
   timestamp : UInt64,
   tree_size : UInt64,
   root_hash : Hash,
-) -> Result[Array[Int], CtError] {
+) -> Result[Array[Int32], CtError] {
   if !bytes_in_range(root_hash) {
     Err(CtError::BadByte)
   } else if !is_valid_hash(root_hash) {
@@ -600,7 +600,7 @@ pub fn v1_tree_head_signed_input(
 
 ///|
 pub fn decode_v1_tree_head_signed_input(
-  bytes : Array[Int],
+  bytes : Array[Int32],
 ) -> Result[V1TreeHeadSigned, CtError] {
   let reader = new_byte_reader(bytes)
   match reader.read_u8() {

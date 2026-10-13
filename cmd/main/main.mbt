@@ -1,5 +1,5 @@
 ///|
-fn demo_hash(input : Array[Int]) -> @moonct.Hash {
+fn demo_hash(input : Array[Int32]) -> @moonct.Hash {
   let out = Array(capacity=32)
   for _ in 0..<32 {
     out.push(0)
@@ -16,7 +16,7 @@ fn demo_hash(input : Array[Int]) -> @moonct.Hash {
 }
 
 ///|
-fn sample_entries() -> Array[Array[Int]] {
+fn sample_entries() -> Array[Array[Int32]] {
   let entries = Array(capacity=7)
   for i in 0..<7 {
     entries.push([i, i + 1, 9])

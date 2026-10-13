@@ -1,8 +1,8 @@
 ///|
 /// One RFC 9162 extension. Type 65535 is reserved and rejected.
 pub struct CtExtension {
-  type_code : Int
-  data : Array[Int]
+  type_code : Int32
+  data : Array[Int32]
 }
 
 ///|
@@ -10,17 +10,17 @@ pub struct CtExtension {
 pub struct V2CertificateEntry {
   timestamp : UInt64
   issuer_key_hash : Hash
-  tbs_certificate : Array[Int]
+  tbs_certificate : Array[Int32]
   extensions : Array[CtExtension]
 }
 
 ///|
 /// RFC 9162 SignedCertificateTimestampDataV2. The signature is not verified here.
 pub struct V2SignedCertificateTimestamp {
-  log_id : Array[Int]
+  log_id : Array[Int32]
   timestamp : UInt64
   extensions : Array[CtExtension]
-  signature : Array[Int]
+  signature : Array[Int32]
 }
 
 ///|
@@ -34,14 +34,14 @@ pub struct V2TreeHead {
 
 ///|
 pub struct V2SignedTreeHead {
-  log_id : Array[Int]
+  log_id : Array[Int32]
   tree_head : V2TreeHead
-  signature : Array[Int]
+  signature : Array[Int32]
 }
 
 ///|
 pub struct V2ConsistencyProof {
-  log_id : Array[Int]
+  log_id : Array[Int32]
   tree_size_1 : UInt64
   tree_size_2 : UInt64
   consistency_path : Array[Hash]
@@ -49,7 +49,7 @@ pub struct V2ConsistencyProof {
 
 ///|
 pub struct V2InclusionProof {
-  log_id : Array[Int]
+  log_id : Array[Int32]
   tree_size : UInt64
   leaf_index : UInt64
   inclusion_path : Array[Hash]
@@ -76,7 +76,7 @@ fn inner_framing(err : CtError) -> CtError {
 }
 
 ///|
-pub fn trans_type_code(item : TransItem) -> Int {
+pub fn trans_type_code(item : TransItem) -> Int32 {
   match item {
     X509EntryV2(_) => 0x0100
     PrecertEntryV2(_) => 0x0101
@@ -89,7 +89,7 @@ pub fn trans_type_code(item : TransItem) -> Int {
 }
 
 ///|
-fn accept_trans_code(code : Int) -> Result[Int, CtError] {
+fn accept_trans_code(code : Int32) -> Result[Int32, CtError] {
   if code < 0 || code > ct_u16_max() {
     Err(CtError::Overflow)
   } else if code <= 0x00FF ||
@@ -154,8 +154,8 @@ fn copy_hashes(hashes : Array[Hash]) -> Array[Hash] {
 
 ///|
 pub fn new_ct_extension(
-  type_code : Int,
-  data : Array[Int],
+  type_code : Int32,
+  data : Array[Int32],
 ) -> Result[CtExtension, CtError] {
   let item = { type_code, data: bytes_copy(data), }
   let list = Array(capacity=1)
@@ -195,7 +195,7 @@ fn check_hash_list(hashes : Array[Hash]) -> Result[Array[Hash], CtError] {
 }
 
 ///|
-fn check_v2_log_id(log_id : Array[Int]) -> Result[Array[Int], CtError] {
+fn check_v2_log_id(log_id : Array[Int32]) -> Result[Array[Int32], CtError] {
   if !bytes_in_range(log_id) {
     Err(CtError::BadByte)
   } else if log_id.length() < 2 || log_id.length() > 127 {
@@ -206,7 +206,9 @@ fn check_v2_log_id(log_id : Array[Int]) -> Result[Array[Int], CtError] {
 }
 
 ///|
-fn check_v2_signature(signature : Array[Int]) -> Result[Array[Int], CtError] {
+fn check_v2_signature(
+  signature : Array[Int32],
+) -> Result[Array[Int32], CtError] {
   if !bytes_in_range(signature) {
     Err(CtError::BadByte)
   } else if signature.length() == 0 || signature.length() > ct_u16_max() {
@@ -217,7 +219,7 @@ fn check_v2_signature(signature : Array[Int]) -> Result[Array[Int], CtError] {
 }
 
 ///|
-fn check_tbs(tbs : Array[Int]) -> Result[Array[Int], CtError] {
+fn check_tbs(tbs : Array[Int32]) -> Result[Array[Int32], CtError] {
   if !bytes_in_range(tbs) {
     Err(CtError::BadByte)
   } else if tbs.length() == 0 || tbs.length() > ct_u24_max() {
@@ -231,7 +233,7 @@ fn check_tbs(tbs : Array[Int]) -> Result[Array[Int], CtError] {
 pub fn new_v2_certificate_entry(
   timestamp : UInt64,
   issuer_key_hash : Hash,
-  tbs_certificate : Array[Int],
+  tbs_certificate : Array[Int32],
   extensions : Array[CtExtension],
 ) -> Result[V2CertificateEntry, CtError] {
   match check_node_hash(issuer_key_hash) {
@@ -256,10 +258,10 @@ pub fn new_v2_certificate_entry(
 
 ///|
 pub fn new_v2_sct(
-  log_id : Array[Int],
+  log_id : Array[Int32],
   timestamp : UInt64,
   extensions : Array[CtExtension],
-  signature : Array[Int],
+  signature : Array[Int32],
 ) -> Result[V2SignedCertificateTimestamp, CtError] {
   match check_v2_log_id(log_id) {
     Err(err) => Err(err)
@@ -306,9 +308,9 @@ pub fn new_v2_tree_head(
 
 ///|
 pub fn new_v2_signed_tree_head(
-  log_id : Array[Int],
+  log_id : Array[Int32],
   tree_head : V2TreeHead,
-  signature : Array[Int],
+  signature : Array[Int32],
 ) -> Result[V2SignedTreeHead, CtError] {
   match
     new_v2_tree_head(
@@ -332,7 +334,7 @@ pub fn new_v2_signed_tree_head(
 
 ///|
 pub fn new_v2_consistency(
-  log_id : Array[Int],
+  log_id : Array[Int32],
   tree_size_1 : UInt64,
   tree_size_2 : UInt64,
   consistency_path : Array[Hash],
@@ -350,7 +352,7 @@ pub fn new_v2_consistency(
 
 ///|
 pub fn new_v2_inclusion(
-  log_id : Array[Int],
+  log_id : Array[Int32],
   tree_size : UInt64,
   leaf_index : UInt64,
   inclusion_path : Array[Hash],
@@ -367,7 +369,7 @@ pub fn new_v2_inclusion(
 }
 
 ///|
-fn parse_extensions(body : Array[Int]) -> Result[Array[CtExtension], CtError] {
+fn parse_extensions(body : Array[Int32]) -> Result[Array[CtExtension], CtError] {
   let reader = new_byte_reader(body)
   let out = Array(capacity=4)
   let mut failed : CtError? = None
@@ -392,7 +394,7 @@ fn parse_extensions(body : Array[Int]) -> Result[Array[CtExtension], CtError] {
 }
 
 ///|
-fn parse_hash_vector(body : Array[Int]) -> Result[Array[Hash], CtError] {
+fn parse_hash_vector(body : Array[Int32]) -> Result[Array[Hash], CtError] {
   let reader = new_byte_reader(body)
   let out = Array(capacity=4)
   let mut failed : CtError? = None
@@ -440,7 +442,7 @@ fn ByteReader::read_hash_vector(self : Self) -> Result[Array[Hash], CtError] {
 }
 
 ///|
-fn ByteReader::read_v2_log_id(self : Self) -> Result[Array[Int], CtError] {
+fn ByteReader::read_v2_log_id(self : Self) -> Result[Array[Int32], CtError] {
   self.read_opaque(1, 2, 127)
 }
 
@@ -495,7 +497,7 @@ fn WriteGate::put_hash_vector(self : Self, hashes : Array[Hash]) -> Unit {
 }
 
 ///|
-fn WriteGate::put_v2_log_id(self : Self, log_id : Array[Int]) -> Unit {
+fn WriteGate::put_v2_log_id(self : Self, log_id : Array[Int32]) -> Unit {
   self.put_opaque(1, log_id, 2, 127)
 }
 
@@ -711,7 +713,7 @@ fn WriteGate::put_trans_item(self : Self, item : TransItem) -> Unit {
 ///|
 fn ByteReader::read_trans_body(
   self : Self,
-  code : Int,
+  code : Int32,
 ) -> Result[TransItem, CtError] {
   if code == 0x0100 {
     match self.read_v2_certificate_entry() {
@@ -766,14 +768,14 @@ fn ByteReader::read_trans_item(self : Self) -> Result[TransItem, CtError] {
 }
 
 ///|
-pub fn encode_trans_item(item : TransItem) -> Result[Array[Int], CtError] {
+pub fn encode_trans_item(item : TransItem) -> Result[Array[Int32], CtError] {
   let gate = new_write_gate()
   gate.put_trans_item(item)
   gate.finish()
 }
 
 ///|
-pub fn decode_trans_item(bytes : Array[Int]) -> Result[TransItem, CtError] {
+pub fn decode_trans_item(bytes : Array[Int32]) -> Result[TransItem, CtError] {
   let reader = new_byte_reader(bytes)
   match reader.read_trans_item() {
     Err(err) => Err(err)

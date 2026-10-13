@@ -1,19 +1,19 @@
 ///|
 /// Cursor over an immutable byte array.
 pub struct ByteReader {
-  data : Array[Int]
-  mut offset : Int
+  data : Array[Int32]
+  mut offset : Int32
 }
 
 ///|
 /// Growing big-endian byte sink.
 pub struct ByteWriter {
-  data : Array[Int]
+  data : Array[Int32]
 }
 
 ///|
 /// Create a reader positioned at the first byte.
-pub fn new_byte_reader(data : Array[Int]) -> ByteReader {
+pub fn new_byte_reader(data : Array[Int32]) -> ByteReader {
   { data: bytes_copy(data), offset: 0, }
 }
 
@@ -25,13 +25,13 @@ pub fn new_byte_writer() -> ByteWriter {
 
 ///|
 /// Bytes still available to the reader.
-pub fn ByteReader::remaining(self : Self) -> Int {
+pub fn ByteReader::remaining(self : Self) -> Int32 {
   self.data.length() - self.offset
 }
 
 ///|
 /// Absolute position, useful for bounded extension vectors.
-pub fn ByteReader::position(self : Self) -> Int {
+pub fn ByteReader::position(self : Self) -> Int32 {
   self.offset
 }
 
@@ -39,7 +39,7 @@ pub fn ByteReader::position(self : Self) -> Int {
 /// Move the cursor backward after a speculative parse.
 pub fn ByteReader::rewind_to(
   self : Self,
-  position : Int,
+  position : Int32,
 ) -> Result[Unit, CtError] {
   if position < 0 || position > self.data.length() || position > self.offset {
     Err(CtError::BadLength)
@@ -50,7 +50,7 @@ pub fn ByteReader::rewind_to(
 }
 
 ///|
-pub fn ByteReader::read_u8(self : Self) -> Result[Int, CtError] {
+pub fn ByteReader::read_u8(self : Self) -> Result[Int32, CtError] {
   if self.offset >= self.data.length() {
     Err(CtError::Truncated)
   } else {
@@ -65,7 +65,7 @@ pub fn ByteReader::read_u8(self : Self) -> Result[Int, CtError] {
 }
 
 ///|
-pub fn ByteReader::read_u16(self : Self) -> Result[Int, CtError] {
+pub fn ByteReader::read_u16(self : Self) -> Result[Int32, CtError] {
   match self.read_u8() {
     Err(err) => Err(err)
     Ok(hi) =>
@@ -77,7 +77,7 @@ pub fn ByteReader::read_u16(self : Self) -> Result[Int, CtError] {
 }
 
 ///|
-pub fn ByteReader::read_u24(self : Self) -> Result[Int, CtError] {
+pub fn ByteReader::read_u24(self : Self) -> Result[Int32, CtError] {
   match self.read_u16() {
     Err(err) => Err(err)
     Ok(hi) =>
@@ -89,7 +89,7 @@ pub fn ByteReader::read_u24(self : Self) -> Result[Int, CtError] {
 }
 
 ///|
-fn shift_byte(value : UInt64, byte : Int) -> UInt64 {
+fn shift_byte(value : UInt64, byte : Int32) -> UInt64 {
   (value << 8) + byte.to_uint64()
 }
 
@@ -114,7 +114,10 @@ pub fn ByteReader::read_u64(self : Self) -> Result[UInt64, CtError] {
 }
 
 ///|
-pub fn ByteReader::read_uint(self : Self, width : Int) -> Result[Int, CtError] {
+pub fn ByteReader::read_uint(
+  self : Self,
+  width : Int32,
+) -> Result[Int32, CtError] {
   if width == 1 {
     self.read_u8()
   } else if width == 2 {
@@ -129,8 +132,8 @@ pub fn ByteReader::read_uint(self : Self, width : Int) -> Result[Int, CtError] {
 ///|
 pub fn ByteReader::read_bytes(
   self : Self,
-  count : Int,
-) -> Result[Array[Int], CtError] {
+  count : Int32,
+) -> Result[Array[Int32], CtError] {
   if count < 0 {
     Err(CtError::BadLength)
   } else if self.remaining() < count {
@@ -158,10 +161,10 @@ pub fn ByteReader::read_bytes(
 /// Read a TLS opaque vector whose length prefix is `width` bytes.
 pub fn ByteReader::read_opaque(
   self : Self,
-  width : Int,
-  min_len : Int,
-  max_len : Int,
-) -> Result[Array[Int], CtError] {
+  width : Int32,
+  min_len : Int32,
+  max_len : Int32,
+) -> Result[Array[Int32], CtError] {
   match self.read_uint(width) {
     Err(err) => Err(err)
     Ok(length) =>
@@ -188,7 +191,10 @@ pub fn ByteReader::expect_exhausted(self : Self) -> Result[Unit, CtError] {
 }
 
 ///|
-pub fn ByteWriter::write_u8(self : Self, value : Int) -> Result[Unit, CtError] {
+pub fn ByteWriter::write_u8(
+  self : Self,
+  value : Int32,
+) -> Result[Unit, CtError] {
   if value < 0 || value > 255 {
     Err(CtError::BadByte)
   } else {
@@ -198,7 +204,10 @@ pub fn ByteWriter::write_u8(self : Self, value : Int) -> Result[Unit, CtError] {
 }
 
 ///|
-pub fn ByteWriter::write_u16(self : Self, value : Int) -> Result[Unit, CtError] {
+pub fn ByteWriter::write_u16(
+  self : Self,
+  value : Int32,
+) -> Result[Unit, CtError] {
   if value < 0 || value > 65535 {
     Err(CtError::Overflow)
   } else {
@@ -210,7 +219,10 @@ pub fn ByteWriter::write_u16(self : Self, value : Int) -> Result[Unit, CtError] 
 }
 
 ///|
-pub fn ByteWriter::write_u24(self : Self, value : Int) -> Result[Unit, CtError] {
+pub fn ByteWriter::write_u24(
+  self : Self,
+  value : Int32,
+) -> Result[Unit, CtError] {
   if value < 0 || value > 16777215 {
     Err(CtError::Overflow)
   } else {
@@ -243,8 +255,8 @@ pub fn ByteWriter::write_u64(
 ///|
 pub fn ByteWriter::write_uint(
   self : Self,
-  width : Int,
-  value : Int,
+  width : Int32,
+  value : Int32,
 ) -> Result[Unit, CtError] {
   if width == 1 {
     self.write_u8(value)
@@ -260,7 +272,7 @@ pub fn ByteWriter::write_uint(
 ///|
 pub fn ByteWriter::write_bytes(
   self : Self,
-  data : Array[Int],
+  data : Array[Int32],
 ) -> Result[Unit, CtError] {
   if !bytes_in_range(data) {
     Err(CtError::BadByte)
@@ -275,10 +287,10 @@ pub fn ByteWriter::write_bytes(
 ///|
 pub fn ByteWriter::write_opaque(
   self : Self,
-  width : Int,
-  data : Array[Int],
-  min_len : Int,
-  max_len : Int,
+  width : Int32,
+  data : Array[Int32],
+  min_len : Int32,
+  max_len : Int32,
 ) -> Result[Unit, CtError] {
   if min_len < 0 ||
     max_len < min_len ||
@@ -297,22 +309,22 @@ pub fn ByteWriter::write_opaque(
 
 ///|
 /// Copy the bytes written so far.
-pub fn ByteWriter::bytes(self : Self) -> Array[Int] {
+pub fn ByteWriter::bytes(self : Self) -> Array[Int32] {
   bytes_copy(self.data)
 }
 
 ///|
-pub fn ByteWriter::length(self : Self) -> Int {
+pub fn ByteWriter::length(self : Self) -> Int32 {
   self.data.length()
 }
 
 ///|
-fn ct_u16_max() -> Int {
+fn ct_u16_max() -> Int32 {
   65535
 }
 
 ///|
-fn ct_u24_max() -> Int {
+fn ct_u24_max() -> Int32 {
   16777215
 }
 
@@ -342,7 +354,7 @@ fn WriteGate::note(self : Self, result : Result[Unit, CtError]) -> Unit {
 }
 
 ///|
-pub fn WriteGate::put_u8(self : Self, value : Int) -> Unit {
+pub fn WriteGate::put_u8(self : Self, value : Int32) -> Unit {
   match self.failed {
     Some(_) => ()
     None => self.note(self.writer.write_u8(value))
@@ -350,7 +362,7 @@ pub fn WriteGate::put_u8(self : Self, value : Int) -> Unit {
 }
 
 ///|
-pub fn WriteGate::put_u16(self : Self, value : Int) -> Unit {
+pub fn WriteGate::put_u16(self : Self, value : Int32) -> Unit {
   match self.failed {
     Some(_) => ()
     None => self.note(self.writer.write_u16(value))
@@ -358,7 +370,7 @@ pub fn WriteGate::put_u16(self : Self, value : Int) -> Unit {
 }
 
 ///|
-pub fn WriteGate::put_u24(self : Self, value : Int) -> Unit {
+pub fn WriteGate::put_u24(self : Self, value : Int32) -> Unit {
   match self.failed {
     Some(_) => ()
     None => self.note(self.writer.write_u24(value))
@@ -374,7 +386,7 @@ pub fn WriteGate::put_u64(self : Self, value : UInt64) -> Unit {
 }
 
 ///|
-pub fn WriteGate::put_bytes(self : Self, data : Array[Int]) -> Unit {
+pub fn WriteGate::put_bytes(self : Self, data : Array[Int32]) -> Unit {
   match self.failed {
     Some(_) => ()
     None => self.note(self.writer.write_bytes(data))
@@ -384,10 +396,10 @@ pub fn WriteGate::put_bytes(self : Self, data : Array[Int]) -> Unit {
 ///|
 pub fn WriteGate::put_opaque(
   self : Self,
-  width : Int,
-  data : Array[Int],
-  min_len : Int,
-  max_len : Int,
+  width : Int32,
+  data : Array[Int32],
+  min_len : Int32,
+  max_len : Int32,
 ) -> Unit {
   match self.failed {
     Some(_) => ()
@@ -397,7 +409,7 @@ pub fn WriteGate::put_opaque(
 
 ///|
 /// Return the framed bytes, or the first error recorded by a put.
-pub fn WriteGate::finish(self : Self) -> Result[Array[Int], CtError] {
+pub fn WriteGate::finish(self : Self) -> Result[Array[Int32], CtError] {
   match self.failed {
     Some(err) => Err(err)
     None => Ok(self.writer.bytes())

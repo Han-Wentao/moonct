@@ -1,5 +1,5 @@
 ///|
-fn invalid_sha256(_input : Array[Int]) -> Hash {
+fn invalid_sha256(_input : Array[Int32]) -> Hash {
   Array::make(32, 256)
 }
 

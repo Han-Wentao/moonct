@@ -1,6 +1,6 @@
 ///|
-fn test_hash(input : Array[Int]) -> Array[Int] {
-  let out : Array[Int] = Array::make(32, 0)
+fn test_hash(input : Array[Int32]) -> Array[Int32] {
+  let out : Array[Int32] = Array::make(32, 0)
   for i = 0; i < input.length(); i = i + 1 {
     let slot = i % 32
     out[slot] = (out[slot] + input[i] + i) % 256
@@ -36,7 +36,7 @@ test "proof height is bounded" {
 ///|
 test "tree head verifier delegates signature" {
   let head = @moonct.new_tree_head(0U, 1U, 1U, Array::make(32, 1))
-  let accepted : (Array[Int], Array[Int], Array[Int]) -> Bool = fn(
+  let accepted : (Array[Int32], Array[Int32], Array[Int32]) -> Bool = fn(
     _key,
     _message,
     _signature,
@@ -92,7 +92,7 @@ test "invalid index is rejected" {
 ///|
 test "signature rejection is propagated" {
   let head = @moonct.new_tree_head(0U, 1U, 1U, Array::make(32, 1))
-  let rejected : (Array[Int], Array[Int], Array[Int]) -> Bool = fn(
+  let rejected : (Array[Int32], Array[Int32], Array[Int32]) -> Bool = fn(
     _key,
     _message,
     _signature,
@@ -164,7 +164,11 @@ test "tree head invariants reject bad version and empty tree" {
 ///|
 test "tree head verifier rejects missing signature inputs" {
   let head = @moonct.new_tree_head(0U, 1U, 1U, Array::make(32, 1))
-  let accepts : (Array[Int], Array[Int], Array[Int]) -> Bool = fn(_k, _m, _s) {
+  let accepts : (Array[Int32], Array[Int32], Array[Int32]) -> Bool = fn(
+    _k,
+    _m,
+    _s,
+  ) {
     true
   }
   assert_false(@moonct.verify_tree_head(head, [], [1], [2], accepts))

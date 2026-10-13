@@ -3,22 +3,22 @@
 ///|
 /// The caller supplies SHA-256 and signature verification so this package can
 /// remain runtime-agnostic and reuse the platform's cryptographic primitives.
-pub type Hash = Array[Int]
+pub type Hash = Array[Int32]
 
 ///|
 /// A signed tree head's public fields.
 pub struct TreeHead {
-  version : UInt
-  timestamp : UInt
-  tree_size : UInt
+  version : UInt32
+  timestamp : UInt32
+  tree_size : UInt32
   root_hash : Hash
 }
 
 ///|
 /// An inclusion proof for a leaf.
 pub struct InclusionProof {
-  leaf_index : UInt
-  tree_size : UInt
+  leaf_index : UInt32
+  tree_size : UInt32
   audit_path : Array[Hash]
 }
 
@@ -36,7 +36,7 @@ fn valid_hash(hash : Hash) -> Bool {
 }
 
 ///|
-fn ceil_half_uint(value : UInt) -> UInt {
+fn ceil_half_uint(value : UInt32) -> UInt32 {
   value / 2U + value % 2U
 }
 
@@ -56,8 +56,8 @@ fn same_hash(left : Hash, right : Hash) -> Bool {
 }
 
 ///|
-fn prefixed(prefix : Int, payload : Array[Int]) -> Array[Int] {
-  let result : Array[Int] = Array::make(payload.length() + 1, 0)
+fn prefixed(prefix : Int32, payload : Array[Int32]) -> Array[Int32] {
+  let result : Array[Int32] = Array::make(payload.length() + 1, 0)
   result[0] = prefix
   for i = 0; i < payload.length(); i = i + 1 {
     result[i + 1] = payload[i]
@@ -66,8 +66,8 @@ fn prefixed(prefix : Int, payload : Array[Int]) -> Array[Int] {
 }
 
 ///|
-fn joined(left : Hash, right : Hash) -> Array[Int] {
-  let result : Array[Int] = Array::make(65, 0)
+fn joined(left : Hash, right : Hash) -> Array[Int32] {
+  let result : Array[Int32] = Array::make(65, 0)
   result[0] = 1
   for i = 0; i < 32; i = i + 1 {
     result[i + 1] = left[i]
@@ -78,7 +78,7 @@ fn joined(left : Hash, right : Hash) -> Array[Int] {
 
 ///|
 /// Compute the RFC 6962 leaf hash. The supplied function should be SHA-256.
-pub fn leaf_hash(sha256 : (Array[Int]) -> Hash, leaf : Array[Int]) -> Hash? {
+pub fn leaf_hash(sha256 : (Array[Int32]) -> Hash, leaf : Array[Int32]) -> Hash? {
   if !bytes_in_range(leaf) {
     None
   } else {
@@ -94,7 +94,7 @@ pub fn leaf_hash(sha256 : (Array[Int]) -> Hash, leaf : Array[Int]) -> Hash? {
 ///|
 /// Compute the RFC 6962 internal-node hash.
 pub fn node_hash(
-  sha256 : (Array[Int]) -> Hash,
+  sha256 : (Array[Int32]) -> Hash,
   left : Hash,
   right : Hash,
 ) -> Hash? {
@@ -129,7 +129,7 @@ pub fn proof_shape_valid(proof : InclusionProof) -> Bool {
 ///|
 /// Calculate the root implied by an inclusion proof.
 pub fn inclusion_root(
-  sha256 : (Array[Int]) -> Hash,
+  sha256 : (Array[Int32]) -> Hash,
   leaf : Hash,
   proof : InclusionProof,
 ) -> Hash? {
@@ -175,7 +175,7 @@ pub fn inclusion_root(
 ///|
 /// Verify an inclusion proof against a tree head.
 pub fn verify_inclusion(
-  sha256 : (Array[Int]) -> Hash,
+  sha256 : (Array[Int32]) -> Hash,
   leaf : Hash,
   proof : InclusionProof,
   head : TreeHead,
@@ -200,10 +200,10 @@ pub fn tree_head_valid(head : TreeHead) -> Bool {
 /// Verify the signed tree head using a host-provided signature verifier.
 pub fn verify_tree_head(
   head : TreeHead,
-  signature : Array[Int],
-  signed_bytes : Array[Int],
-  public_key : Array[Int],
-  verify_signature : (Array[Int], Array[Int], Array[Int]) -> Bool,
+  signature : Array[Int32],
+  signed_bytes : Array[Int32],
+  public_key : Array[Int32],
+  verify_signature : (Array[Int32], Array[Int32], Array[Int32]) -> Bool,
 ) -> Bool {
   tree_head_valid(head) &&
   signature.length() > 0 &&
@@ -213,7 +213,7 @@ pub fn verify_tree_head(
 
 ///|
 /// Return the height of the proof tree for a non-empty tree.
-pub fn proof_height(tree_size : UInt) -> UInt? {
+pub fn proof_height(tree_size : UInt32) -> UInt32? {
   if tree_size == 0U {
     None
   } else {
@@ -230,9 +230,9 @@ pub fn proof_height(tree_size : UInt) -> UInt? {
 ///|
 /// Construct a tree head value.
 pub fn new_tree_head(
-  version : UInt,
-  timestamp : UInt,
-  tree_size : UInt,
+  version : UInt32,
+  timestamp : UInt32,
+  tree_size : UInt32,
   root_hash : Hash,
 ) -> TreeHead {
   { version, timestamp, tree_size, root_hash, }
@@ -241,8 +241,8 @@ pub fn new_tree_head(
 ///|
 /// Construct an inclusion proof.
 pub fn new_inclusion_proof(
-  leaf_index : UInt,
-  tree_size : UInt,
+  leaf_index : UInt32,
+  tree_size : UInt32,
   audit_path : Array[Hash],
 ) -> InclusionProof {
   { leaf_index, tree_size, audit_path, }
@@ -251,8 +251,8 @@ pub fn new_inclusion_proof(
 ///|
 /// Hash a raw leaf and verify its inclusion proof in one operation.
 pub fn verify_leaf_inclusion(
-  sha256 : (Array[Int]) -> Hash,
-  leaf : Array[Int],
+  sha256 : (Array[Int32]) -> Hash,
+  leaf : Array[Int32],
   proof : InclusionProof,
   head : TreeHead,
 ) -> Bool {
