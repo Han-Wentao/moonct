@@ -14,7 +14,7 @@ pub struct ByteWriter {
 ///|
 /// Create a reader positioned at the first byte.
 pub fn new_byte_reader(data : Array[Int]) -> ByteReader {
-  { data, offset: 0, }
+  { data: bytes_copy(data), offset: 0, }
 }
 
 ///|
@@ -280,8 +280,13 @@ pub fn ByteWriter::write_opaque(
   min_len : Int,
   max_len : Int,
 ) -> Result[Unit, CtError] {
-  if data.length() < min_len || data.length() > max_len {
+  if min_len < 0 ||
+    max_len < min_len ||
+    data.length() < min_len ||
+    data.length() > max_len {
     Err(CtError::BadLength)
+  } else if !bytes_in_range(data) {
+    Err(CtError::BadByte)
   } else {
     match self.write_uint(width, data.length()) {
       Err(err) => Err(err)
