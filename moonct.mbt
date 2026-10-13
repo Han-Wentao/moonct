@@ -27,7 +27,7 @@ pub struct InclusionProof {
 ///|
 /// Return whether a value has the 32-byte SHA-256 shape expected by CT.
 pub fn is_valid_hash(hash : Hash) -> Bool {
-  hash.length() == 32
+  hash.length() == 32 && bytes_in_range(hash)
 }
 
 ///|
@@ -74,11 +74,15 @@ fn joined(left : Hash, right : Hash) -> Array[Int] {
 ///|
 /// Compute the RFC 6962 leaf hash. The supplied function should be SHA-256.
 pub fn leaf_hash(sha256 : (Array[Int]) -> Hash, leaf : Array[Int]) -> Hash? {
-  let result = sha256(prefixed(0, leaf))
-  if valid_hash(result) {
-    Some(result)
-  } else {
+  if !bytes_in_range(leaf) {
     None
+  } else {
+    let result = sha256(prefixed(0, leaf))
+    if valid_hash(result) {
+      Some(result)
+    } else {
+      None
+    }
   }
 }
 
